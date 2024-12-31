@@ -4,7 +4,7 @@ import InputBox from "../components/InputBox";
 import "../css/login.scss";
 import user from "../../public/icon/Person.svg";
 import lock from "../../public/icon/Lock.svg";
-import Button from "../components/button";
+import Button from "../components/Button";
 import kakaoLogin from "../../public/icon/kakaoLogin.svg";
 
 function Login() {
