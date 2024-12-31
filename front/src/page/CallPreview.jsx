@@ -9,7 +9,6 @@ function CallPreview() {
   const btnData ={
     text : "호출하기",
     link : "/calling"
-
   }
   return (
     <div className='callPreview'>
