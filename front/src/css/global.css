@@ -1,0 +1,39 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a{
+    color: inherit;
+    visibility: inherit;
+    text-decoration: none;
+}
+
+li{
+    list-style: none;
+}
+
+img{
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+}
+
+.flex{display: flex;}
+
+ul{
+	padding: 0px;
+}
+#root{
+    height: 100vh;
+    color: var(--bg-yellow);
+}
+
+ 
+ :root{
+    --bg-background: #0B0B0B;
+    --bg-yellow: #FECB00;
+ }
+ /* 사용 예시 */
+ /* background-color: var(--bg-background); */
