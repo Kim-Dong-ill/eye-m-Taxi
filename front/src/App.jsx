@@ -19,9 +19,9 @@ function App() {
   return (
     <div className='mainContainer'>
       <Routes>
+          <Route path='/login' element={<Login />} />
       <Route element={<Layout />}>
           <Route index element={<MainPage />} />
-          <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/callAccept' element={<CallAccept />} />
           <Route path='/calling' element={<Colling />} />

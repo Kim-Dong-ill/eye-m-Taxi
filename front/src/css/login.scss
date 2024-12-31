@@ -1,0 +1,11 @@
+.login{
+    width: 530px;
+    height: 100vh;
+    background-color: var(--bg-background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .loginContainer{
+        border: 1px solid #ffffff;
+    }
+}
