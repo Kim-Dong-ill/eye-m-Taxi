@@ -30,7 +30,7 @@ function App() {
           <Route path='/getOnGetOff' element={<GetOnGetOff />} />
           <Route path='/starScope' element={<StarScope />} />
           <Route path='/voiceRecord' element={<VoiceRecord />} />
-          <Route path='/voiceRecordList' element={<VoiceRecordList />} />
+          <Route path='/voiceRecordList/:word' element={<VoiceRecordList />} />
           <Route path='/driveFinish' element={<DriveFinish />} />
           </Route>
       </Routes> 
