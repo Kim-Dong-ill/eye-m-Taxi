@@ -11,6 +11,7 @@ function Header({showBackArrow,showMainPage}) {
         navigate(-1);
       }
 
+      
     const moveToMain = () => {
         if(showMainPage == false){
             navigate('/');
