@@ -1,0 +1,24 @@
+.inputBox{
+    width: 414px;
+    height: 80px;
+    display: flex;
+    border: 2.5px solid var(--bg-yellow);
+    border-radius: 10px;
+    padding: 10px;
+    .inputBoxIcon{
+        img{
+            width: 100%;
+            height: 100%;
+        }
+    }
+    .inputBoxInput{
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-background);
+        color: var(--bg-yellow);
+        font-size: 38px;
+        padding-left: 20px;
+        border: none;
+        outline: none;
+    }
+}
