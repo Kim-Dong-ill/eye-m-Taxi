@@ -18,8 +18,7 @@ function Header({showBackArrow,showMainPage}) {
     }
       
       
-    
-console.log(showMainPage);
+
 
   return (
     <div className='header'>
