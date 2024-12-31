@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 function VoiceRecord() {
   const [speechKit, setSpeechKit] = useState(null);
   const [isRecording, setIsRecording] = useState(false);  // 녹음 상태를 추적하는 state 추가
+  const [recordedText, setRecordedText] = useState('');  // 음성 인식 텍스트를 저장할 state 추가
+
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -29,7 +31,8 @@ function VoiceRecord() {
       const transcript = Array.from(event.results)
         .map(result => result[0].transcript)
         .join('');
-      console.log('인식된 텍스트:', transcript);
+      // console.log('인식된 텍스트:', transcript);
+      setRecordedText(transcript);  // 인식된 텍스트를 state에 저장
     };
 
     setSpeechKit(kit);
@@ -46,13 +49,19 @@ function VoiceRecord() {
       console.log("녹음 중지");
       speechKit.recognition.stop();
       setIsRecording(false);
-      navigate('/voiceRecordList');
+      if(recordedText !== ''){
+        navigate(`/voiceRecordList/${recordedText}`);
+      }
     }
   };
 
   return (
     <div className='voiceRecord'>
       <img src={Mice} onClick={handleVoiceRecord}/>
+      {isRecording && <div className='recordingText'>녹음 중...</div>}
+      <div className="recorded-text">
+        {recordedText && <p>"{recordedText}"</p>}
+      </div>
     </div>
   )
 }
