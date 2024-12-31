@@ -25,7 +25,7 @@ img{
 ul{
 	padding: 0px;
 }
-#root{
+html,body,#root{
     height: 100vh;
     color: var(--bg-yellow);
 }
