@@ -1,0 +1,64 @@
+.call-accept {
+    // 버튼들을 담을 컨테이너
+    position: fixed;
+    bottom: 20px;  // 하단에서 20px 띄움
+    left: 50%;
+    transform: translateX(-50%);  // 가운데 정렬
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;  
+    
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        pointer-events: none;  // 기존 스타일 유지
+        
+        // Button 컴포넌트의 크기 조정
+        .button {  // 또는 .button, Button 컴포넌트의 실제 클래스명 사용
+            width: 327px !important;    // 더 작은 너비로 조정
+            height: 60px !important;    // 더 작은 높이로 조정
+            font-size: 38px !important; // 글자 크기도 조정
+        }
+    }
+
+    .icons {
+        display: flex;
+        gap: 80px !important;
+        
+        .icon-button {
+            width: 80px;       // 버튼 크기 증가
+            height: 80px;      // 버튼 크기 증가
+            background: none;
+            border: 2px solid var(--bg-yellow);  // 외곽선 추가
+            border-radius: 50%;  // 동그라미 모양
+            padding: 0;         // 패딩 제거
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    
+          img {
+            width: 60px;    // InputBox 아이콘과 동일한 크기로 수정
+            height: 48px;   // InputBox 아이콘과 동일한 크기로 수정
+          }
+
+          &:hover {
+            background-color: var(--bg-yellow);
+            transform: scale(1.1);  // 버튼 크기 10% 증가
+
+            img {
+                filter: brightness(0) invert(1);  // 이미지 색상을 흰색으로 변경
+            }
+        }
+
+        // 클릭 효과
+        &:active {
+            transform: scale(0.95);  // 클릭시 살짝 축소
+        }
+        }
+      }
+  }
