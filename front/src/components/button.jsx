@@ -2,7 +2,7 @@ import React from "react";
 import "../css/components/button.scss";
 import { useNavigate } from "react-router-dom";
 
-function button({ btnData }) {
+function Button({ btnData }) {
   const navigate = useNavigate();
 
   return (
@@ -12,4 +12,4 @@ function button({ btnData }) {
   );
 }
 
-export default button;
+export default Button;

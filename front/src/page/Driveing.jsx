@@ -1,9 +1,19 @@
 import React from 'react'
+import Map from '../components/Map'
+import Button from '../components/button'
 
 function Driveing() {
+
+  const height = 600;
+  const btnData ={
+    text : "도착까지 1분",
+    link : ""
+  }
+
   return (
-    <div>
-      Driveing
+    <div className='callPreview'>
+      <Map height={height}/>
+      <Button btnData={btnData}/>
     </div>
   )
 }
