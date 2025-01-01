@@ -1,0 +1,38 @@
+.register{
+    width: 530px;
+    height: 100vh;
+    background-color: var(--bg-background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .error-message {
+        color: red;
+        font-size: 20px;
+        margin-top: 5px;
+        text-align: left;
+      }
+
+    .registerButton{
+        width: 300px;
+        height: 80px;
+        background-color: var(--bg-background);
+        border: 2.5px solid var(--bg-yellow);
+        color: var(--bg-yellow);
+        border-radius: 10px;
+        font-size: 38px;
+        cursor: pointer;
+        // padding: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 100px auto 0;
+
+    //     &:hover {
+    //         background-color: var(--bg-yellow);
+    //         color: black;
+        
+    // }
+}
+    
+}

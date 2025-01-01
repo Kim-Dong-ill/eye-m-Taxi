@@ -21,5 +21,10 @@
         padding-left: 20px;
         border: none;
         outline: none;
+
+        &::placeholder {
+            font-size: 14px;  // placeholder 크기 조절 (원하는 크기로 조정 가능)
+            color: #999;      // placeholder 색상도 필요하다면 조절 가능
+          }
     }
 }
