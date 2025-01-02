@@ -8,7 +8,7 @@ function CallPreview() {
   const height = 600;
   const btnData ={
     text : "호출하기",
-    link : "/calling"
+    link : "/calling" 
   }
   return (
     <div className='callPreview'>

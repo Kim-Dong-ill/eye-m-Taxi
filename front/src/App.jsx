@@ -20,6 +20,7 @@ function App() {
     <div className='mainContainer'>
       <Routes>
           <Route path='/login' element={<Login />} />
+          
       <Route element={<Layout />}>
           <Route index element={<MainPage />} />
           <Route path='/register' element={<Register />} />
