@@ -17,72 +17,128 @@ function Register() {
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 
-  // 아이디 유효성 검사
+  // 아이디(이메일) 유효성 검사
   const handleUserIdChange = (e) => {
     const value = e.target.value;
     setUserId(value);
 
-    // 영문, 숫자만 허용하는 정규식
-    const isValidFormat = /^[A-Za-z0-9]*$/.test(value);
-    // 영문, 숫자 각각 1개 이상 포함하는지 체크
-    const hasLetter = /[A-Za-z]/.test(value);
-    const hasNumber = /[0-9]/.test(value);
+    if (value.length === 0) {
+      setUserIdError(false);
+      setUserIdErrorMessage("");
+      return;
+    }
 
-    if (!isValidFormat) {
+    validateUserId(value);
+  };
+
+  // 이메일 유효성 검사 함수
+  const validateUserId = (value) => {
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    if (!emailRegex.test(value)) {
       setUserIdError(true);
-      setUserIdErrorMessage("영문과 숫자만 입력 가능합니다.");
-    } else if (value.length > 0 && (!hasLetter || !hasNumber)) {
-      setUserIdError(true);
-      setUserIdErrorMessage("영문과 숫자를 모두 포함해야 합니다.");
+      setUserIdErrorMessage("올바른 이메일 형식이 아닙니다.");
     } else {
       setUserIdError(false);
       setUserIdErrorMessage("");
     }
   };
 
-  // 비밀번호 일치 여부 확인
-  const checkPasswordMatch = (password, confirmPassword) => {
-    if (password && confirmPassword && password !== confirmPassword) {
-      setPasswordError(true);
-      setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
-      return false;
+  // 아이디 입력 필드 포커스 해제 시 검사
+  const handleUserIdBlur = () => {
+    if (userId) {
+      validateUserId(userId);
     }
-    return true;
   };
 
-  // 비밀번호 유효성 검사
-  const handlePasswordChange = (e) => {
-    const value = e.target.value;
-    setPassword(value);
-
-    // 영문, 숫자, 특수문자 검사를 위한 정규식
+  // 비밀번호 유효성 검사 
+  const validatePassword = (value) => {
     const hasLetter = /[A-Za-z]/.test(value);
     const hasNumber = /[0-9]/.test(value);
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+    return hasLetter && hasNumber && hasSpecial;
+  };
 
-    if (value.length > 0) {
-      if (!hasLetter || !hasNumber || !hasSpecial) {
+    // 비밀번호 유효성 검사
+    const handlePasswordChange = (e) => {
+      const value = e.target.value;
+      setPassword(value);
+
+      if (value.length === 0) {
+        setPasswordError(false);
+        setPasswordErrorMessage("");
+        return;
+      }
+
+      // 비밀번호 형식 검사
+      if (!validatePassword(value)) {
         setPasswordError(true);
         setPasswordErrorMessage("영문, 숫자, 특수문자를 모두 포함해야 합니다.");
+      } else if (confirmPassword) {
+        // 비밀번호 확인과 일치 여부 검사
+        if (value !== confirmPassword) {
+          setPasswordError(true);
+          setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
+        } else {
+          setPasswordError(false);
+          setPasswordErrorMessage("");
+        }
       } else {
         setPasswordError(false);
         setPasswordErrorMessage("");
       }
-    }
+    };
+  
+    const handleConfirmPasswordChange = (e) => {
+      const value = e.target.value;
+      setConfirmPassword(value);
 
-    // 비밀번호 확인과 일치 여부 체크
-    checkPasswordMatch(value, confirmPassword);
-  };
+      if (value.length === 0) {
+        setPasswordError(false);
+        setPasswordErrorMessage("");
+        return;
+      }
 
-  const handleConfirmPasswordChange = (e) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
+      // 원래 비밀번호의 형식 검사
+      if (!validatePassword(password)) {
+        setPasswordError(true);
+        setPasswordErrorMessage("영문, 숫자, 특수문자를 모두 포함해야 합니다.");
+        return;
+      }
 
-    if (checkPasswordMatch(password, value)) {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
-    }
-  };
+      // 비밀번호 일치 여부 검사
+      if (password !== value) {
+        setPasswordError(true);
+        setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
+      } else {
+        setPasswordError(false);
+        setPasswordErrorMessage("");
+      }
+    };
+
+    const handlePasswordBlur = () => {
+      if (password) {
+        if (!validatePassword(password)) {
+          setPasswordError(true);
+          setPasswordErrorMessage("영문, 숫자, 특수문자를 모두 포함해야 합니다.");
+        } else if (confirmPassword && password !== confirmPassword) {
+          setPasswordError(true);
+          setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
+        }
+      }
+    };
+
+    const handleConfirmPasswordBlur = () => {
+      if (confirmPassword) {
+        if (!validatePassword(password)) {
+          setPasswordError(true);
+          setPasswordErrorMessage("영문, 숫자, 특수문자를 모두 포함해야 합니다.");
+        } else if (password !== confirmPassword) {
+          setPasswordError(true);
+          setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
+        }
+      }
+    };
 
   // 전화번호 유효성 검사
   const handlePhoneInput = (e) => {
@@ -95,9 +151,9 @@ function Register() {
     {
       img: user,
       type: "text",
-      placeholder: "아이디(영문과 숫자를 포함한 8자 이내)",
-      maxLength: 8,
+      placeholder: "아이디(메일 형식)",
       onChange: handleUserIdChange,
+      onBlur: handleUserIdBlur,
       value: userId
     },
     {
