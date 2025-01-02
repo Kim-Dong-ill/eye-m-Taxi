@@ -1,11 +1,14 @@
 import React from 'react'
 import Button from '../components/button'
+import Map from '../components/Map'
 import phone from "../../public/icon/Phone.svg";
 import speaker from "../../public/icon/Speaker.svg";
 
 import "../css/callAccept.scss";
 
 function CallAccept() {
+
+  const height = 600;
 
   const btnData = [
     {
@@ -21,7 +24,8 @@ function CallAccept() {
   ]
 
   return (
-    <div className="call-accept">
+    <div className="callAccept">
+      <Map height={height}/>
       <div className="buttons">
         {btnData.map((btn, index) => (
           <Button key={index} btnData={btn} />
