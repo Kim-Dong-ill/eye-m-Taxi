@@ -1,50 +1,32 @@
 .search-bar {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  width: 95%;
-  max-width: 525px;
-
+  width: 100%;
   form {
     display: flex;
-    gap: 10px;
     border: 2.5px solid var(--bg-yellow);
     border-radius: 10px;
     padding: 10px;
-    background-color: var(--bg-background);
+    width: 100%;
   }
-
   .address-input {
     flex: 1;
     background-color: var(--bg-background);
     color: var(--bg-yellow);
-    font-size: 16px;
     padding-left: 20px;
     border: none;
     outline: none;
-
-    &::placeholder {
-      font-size: 14px;
-      color: #999;
-    }
+    font-size: 36px;
   }
 
   .mic-button {
     background-color: var(--bg-background);
-    color: var(--bg-background);
     border: none;
-    border-radius: 5px;
-    padding: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-
     img {
-      width: 32px;
-      height: 32px;
+      width: 100%;
+      height: 100%;
     }
 
     &:hover {
