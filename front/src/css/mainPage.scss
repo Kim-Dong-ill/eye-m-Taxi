@@ -5,16 +5,23 @@
     justify-content: center;
     align-items: center;
     gap: 20px;
-    .mainPageItem{
-        border: 2.5px solid var(--bg-yellow);
-        border-radius: 10px;
-        width: 327px;
-        height: 200px;
+    .mainPageItemContainer{
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        font-size: 58px;
-        font-weight: bold;
-        cursor: pointer;
+        gap: 20px;
+        .mainPageItem{
+            border: 2.5px solid var(--bg-yellow);
+            border-radius: 10px;
+            width: 327px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 58px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     }
 }
