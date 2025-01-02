@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../css/components/searchBar.scss';
 import mic from "../../public/icon/Microphone.svg";
 
-function SearchBar({ onSearch }) {
+function SearchBar({ onSearch, text }) {
   const [searchAddress, setSearchAddress] = useState('');
   const navigate = useNavigate();
 
