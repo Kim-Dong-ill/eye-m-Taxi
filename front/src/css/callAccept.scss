@@ -1,0 +1,53 @@
+.callAccept {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    gap: 30px;  
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        pointer-events: none; 
+        
+        .button {  
+            width: 327px !important;    
+            height: 60px !important;   
+            font-size: 38px !important;
+        }
+    }
+
+    .icons {
+        display: flex;
+        gap: 80px !important;
+        
+        .icon-button {
+            width: 80px;      
+            height: 80px;      
+            background: none;
+            border: 2px solid var(--bg-yellow);  
+            border-radius: 50%;  
+            padding: 0;        
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+    
+          &:hover {
+            background-color: var(--bg-yellow);
+            transform: scale(1.1);  
+
+            img {
+                filter: brightness(0) invert(1);  
+            }
+        }
+
+        &:active {
+            transform: scale(0.95);  
+        }
+        }
+      }
+  }

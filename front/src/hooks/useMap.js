@@ -5,9 +5,11 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
+
 const useMap = (mapContainerRef, style, config) => {
     
     useEffect(() => {
+      
         if (!mapContainerRef.current) return; // 컨테이너 존재 여부 확인
 
 

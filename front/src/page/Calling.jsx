@@ -1,6 +1,6 @@
 import React from 'react'
 import TextBox from '../components/TextBox'
-import Button from '../components/Button'
+import Button from '../components/button'
 import '../css/calling.scss'
 
 function Calling() {

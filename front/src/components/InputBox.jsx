@@ -9,7 +9,15 @@ function inputBox({data}) {
         <div className='inputBoxIcon'>
             <img src={item.img} alt="" />
         </div>
-      <input className='inputBoxInput' type={item.type} placeholder={item.placeholder}/>
+      <input 
+      className='inputBoxInput' 
+      type={item.type} 
+      placeholder={item.placeholder}
+      maxLength={item.maxLength}
+      onInput={item.onInput}
+      onChange={item.onChange}  
+      value={item.value} 
+      />
     </div>
     ))
   )

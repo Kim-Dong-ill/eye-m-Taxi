@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../components/Button";
+import Button from "../components/button";
 import "../css/starScope.scss";
 import bigStar from "../../public/icon/bigStar.svg";
 

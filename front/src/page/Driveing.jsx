@@ -1,6 +1,6 @@
 import React from 'react'
 import Map from '../components/Map'
-import Button from '../components/Button'
+import Button from '../components/button'
 
 function Driveing() {
 

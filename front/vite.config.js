@@ -11,11 +11,12 @@ const __dirname = path.dirname(__filename)
 export default defineConfig({
   plugins: [react()],
   server: {
-    https: {
-      key: fs.readFileSync('./localhost-key.pem'),
-      cert: fs.readFileSync('./localhost.pem'),
-    },
+    // https: {
+    //   key: fs.readFileSync('./localhost-key.pem'),
+    //   cert: fs.readFileSync('./localhost.pem'),
+    // },
     port: 5173,  // 기본 포트
-    host: 'localhost'  // 명시적으로 localhost 지정
+    host: 'localhost',  // 명시적으로 localhost 지정
+    https: false
   }
 })
