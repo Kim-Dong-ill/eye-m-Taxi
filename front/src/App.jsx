@@ -29,7 +29,6 @@ function App() {
         </Route>
 
         <Route element={<Layout />}>
-          {/* <Route path="/register" element={<Register />} /> */}
           <Route element={<ProtectedRoute />}>
             <Route index element={<MainPage />} />
             <Route path="/callAccept" element={<CallAccept />} />

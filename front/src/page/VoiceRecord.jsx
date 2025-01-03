@@ -2,13 +2,14 @@ import React, { useState } from 'react'
 import '../css/voiceRecord.scss'
 import Mice from '../../public/icon/Microphone.svg'
 import SpeechKit from '@mastashake08/speech-kit'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function VoiceRecord() {
   const [speechKit, setSpeechKit] = useState(null);
   const [isRecording, setIsRecording] = useState(false);  // 녹음 상태를 추적하는 state 추가
   const [recordedText, setRecordedText] = useState('');  // 음성 인식 텍스트를 저장할 state 추가
-
+  const location = useLocation();
+  const locationType = new URLSearchParams(location.search).get('type');
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -50,8 +51,9 @@ function VoiceRecord() {
       speechKit.recognition.stop();
       setIsRecording(false);
       if(recordedText !== ''){
-        navigate(`/voiceRecordList/${recordedText}`);
-      }
+        navigate(`/voiceRecordList/${encodeURIComponent(recordedText)}?type=${locationType}`, {
+          state: location.state // 현재의 state(승하차 정보)를 그대로 전달
+        });      }
     }
   };
 
