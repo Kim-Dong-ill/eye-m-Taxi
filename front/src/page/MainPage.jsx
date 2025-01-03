@@ -1,9 +1,12 @@
 import React from "react";
 import "../css/mainPage.scss";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import axiosInstance from "../utils/axios";
 
 function MainPage() {
   const navigate = useNavigate();
+
   return (
     <div className="mainPage">
       <div className="mainPageItemContainer">
