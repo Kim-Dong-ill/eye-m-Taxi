@@ -1,0 +1,10 @@
+.center-marker {
+    position: absolute;
+    transform: translate(-50%, -100%) rotate(0deg);
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    z-index: 1;
+}
