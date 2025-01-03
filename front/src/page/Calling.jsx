@@ -1,11 +1,37 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import TextBox from '../components/TextBox'
 import Button from '../components/button'
 import '../css/calling.scss'
+import { useNavigate } from 'react-router-dom';
 
 function Calling() {
 
-  const text = ['최대 2분 거리에서', '택시 호출중...'];
+  const navigate = useNavigate();
+  const [distance, setDistance] = useState('1');
+  
+  useEffect(() => {
+    const timer2s = setTimeout(() => {
+      setDistance('2');
+    }, 2500);
+    
+    const timer5s = setTimeout(() => {
+      setDistance('5');
+    }, 7000);
+
+    const timerNavigate = setTimeout(() => {
+      navigate('/callAccept'); // 10초 후 홈으로 이동
+    }, 10000);
+
+    // cleanup function
+    return () => {
+      clearTimeout(timer2s);
+      clearTimeout(timer5s);
+      clearTimeout(timerNavigate);
+    };
+  }, []);
+  
+
+  const text = [`최대 ${distance}분 거리에서`, `택시 호출중...`];
   const btnData = {
     text : "호출 취소하기",
     link : "/"

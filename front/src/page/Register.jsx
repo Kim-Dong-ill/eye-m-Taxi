@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import InputBox from "../components/InputBox";
 import Button from "../components/button";
 import "../css/register.scss";
-import user from "../../public/icon/Person.svg";
-import lock from "../../public/icon/Lock.svg";
-import phone from "../../public/icon/Phone.svg";
+import user from "/icon/Person.svg";
+import lock from "/icon/Lock.svg";
+import phone from "/icon/Phone.svg";
 
 function Register() {
 
@@ -282,6 +282,12 @@ const handleRegister = () => {
     // link: "/login",
     onClick: handleRegister
     };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(userId);
+    console.log(password);
+  }
 
   return (
     <div className="register">
