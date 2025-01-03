@@ -15,15 +15,21 @@ import DriveFinish from "./page/DriveFinish";
 import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import "./css/app.scss";
+import PublicRoute from "./components/layout/PublicRoute";
 
 function App() {
   return (
     <div className="mainContainer">
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+          <Route element={<Layout />}>
+            <Route path="/register" element={<Register />} />
+          </Route>
+        </Route>
 
         <Route element={<Layout />}>
-          <Route path="/register" element={<Register />} />
+          {/* <Route path="/register" element={<Register />} /> */}
           <Route element={<ProtectedRoute />}>
             <Route index element={<MainPage />} />
             <Route path="/callAccept" element={<CallAccept />} />

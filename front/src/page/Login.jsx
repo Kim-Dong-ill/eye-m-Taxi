@@ -42,7 +42,7 @@ function Login() {
       })
     );
 
-    // navigate("/");
+    navigate("/");
   };
 
   const handleChange = (e) => {
