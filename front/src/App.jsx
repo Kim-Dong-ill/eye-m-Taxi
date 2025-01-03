@@ -1,42 +1,48 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import MainPage from './page/MainPage'
-import CallAccept from './page/CallAccept'
-import Calling from './page/Calling'
-import CallPreview from './page/CallPreview'
-import Driveing from './page/Driveing'
-import GetOnGetOff from './page/GetOnGetOff'
-import Login from './page/Login'
-import Register from './page/Register'
-import StarScope from './page/StarScope'
-import VoiceRecord from './page/VoiceRecord'
-import VoiceRecordList from './page/VoiceRecordList'
-import DriveFinish from './page/DriveFinish'
-import Layout from './components/layout/layout'
-import './css/app.scss'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import MainPage from "./page/MainPage";
+import CallAccept from "./page/CallAccept";
+import Calling from "./page/Calling";
+import CallPreview from "./page/CallPreview";
+import Driveing from "./page/Driveing";
+import GetOnGetOff from "./page/GetOnGetOff";
+import Login from "./page/Login";
+import Register from "./page/Register";
+import StarScope from "./page/StarScope";
+import VoiceRecord from "./page/VoiceRecord";
+import VoiceRecordList from "./page/VoiceRecordList";
+import DriveFinish from "./page/DriveFinish";
+import Layout from "./components/layout/Layout";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import "./css/app.scss";
 
 function App() {
   return (
-    <div className='mainContainer'>
+    <div className="mainContainer">
       <Routes>
-          <Route path='/login' element={<Login />} />
-          
-      <Route element={<Layout />}>
-          <Route index element={<MainPage />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/callAccept' element={<CallAccept />} />
-          <Route path='/calling' element={<Calling />} />
-          <Route path='/callPreview' element={<CallPreview />} />
-          <Route path='/driveing' element={<Driveing />} />
-          <Route path='/getOnGetOff' element={<GetOnGetOff />} />
-          <Route path='/starScope' element={<StarScope />} />
-          <Route path='/voiceRecord' element={<VoiceRecord />} />
-          <Route path='/voiceRecordList/:word' element={<VoiceRecordList />} />
-          <Route path='/driveFinish' element={<DriveFinish />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route element={<Layout />}>
+          <Route path="/register" element={<Register />} />
+          <Route element={<ProtectedRoute />}>
+            <Route index element={<MainPage />} />
+            <Route path="/callAccept" element={<CallAccept />} />
+            <Route path="/calling" element={<Calling />} />
+            <Route path="/callPreview" element={<CallPreview />} />
+            <Route path="/driveing" element={<Driveing />} />
+            <Route path="/getOnGetOff" element={<GetOnGetOff />} />
+            <Route path="/starScope" element={<StarScope />} />
+            <Route path="/voiceRecord" element={<VoiceRecord />} />
+            <Route
+              path="/voiceRecordList/:word"
+              element={<VoiceRecordList />}
+            />
+            <Route path="/driveFinish" element={<DriveFinish />} />
           </Route>
-      </Routes> 
+        </Route>
+      </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

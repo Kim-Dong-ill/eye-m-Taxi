@@ -11,12 +11,13 @@ function inputBox({data}) {
         </div>
       <input 
       className='inputBoxInput' 
-      type={item.type} 
+      type={item.type}
+      name={item.name}
       placeholder={item.placeholder}
       maxLength={item.maxLength}
       onInput={item.onInput}
       onChange={item.onChange}  
-      value={item.value} 
+      value={item.value || ''} 
       />
     </div>
     ))

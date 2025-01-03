@@ -7,6 +7,7 @@ const mountRouter = (app) =>{
 
     // 카카오 라우터 마운트
     app.use('/kakao', kakaoRouter)
+
 }
 
 export default mountRouter;
