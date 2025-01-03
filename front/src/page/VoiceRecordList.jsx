@@ -4,18 +4,17 @@ import SearchBar from '../components/SearchBar'
 import { useNavigate, useParams } from 'react-router-dom';
 
 function VoiceRecordList() {
-  const [selectedAddress, setSelectedAddress] = useState('');
-  const [text, setText] = useState('')
+  const [selectedAddress, setSelectedAddress] = useState('');//키패드로 온 검색어
+  const [text, setText] = useState('')//음성으로 온 검색어
   const {word} = useParams()
 
   useEffect(()=>{
-
     setText(word)
+    console.log('검색한 주소:', text);
   },[])
   
   const handleSearch = (text) => {
     setSelectedAddress(text);
-    console.log('검색한 주소:', text);
   };
   
 

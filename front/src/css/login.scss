@@ -22,5 +22,22 @@
                 cursor: pointer;
             }
         }
+        form{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .loginSubmitBtn{
+            width: 327px;
+            height: 80px;
+            background-color: var(--bg-background);
+            border: 2.5px solid var(--bg-yellow);
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--bg-yellow);
+            font-size: 36px;
+        }
     }
 }

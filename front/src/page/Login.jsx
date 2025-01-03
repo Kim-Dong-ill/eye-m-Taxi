@@ -86,7 +86,7 @@ function Login() {
           <div>
             <InputBox data={data} handleChange={handleChange} />
           </div>
-          <button type="submit">로그인</button>
+          <button className="loginSubmitBtn" type="submit">로그인</button>
           <div className="loginButton">
             <img src={kakaoLogin} alt="" />
             <Button btnData={btnData} />

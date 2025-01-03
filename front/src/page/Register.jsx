@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import InputBox from "../components/InputBox";
 import Button from "../components/button";
 import "../css/register.scss";
-import user from "../../public/icon/Person.svg";
-import lock from "../../public/icon/Lock.svg";
-import phone from "../../public/icon/Phone.svg";
+import user from "/icon/Person.svg";
+import lock from "/icon/Lock.svg";
+import phone from "/icon/Phone.svg";
 
 function Register() {
 
@@ -16,6 +16,7 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
 
   // 아이디(이메일) 유효성 검사
   const handleUserIdChange = (e) => {
@@ -186,6 +187,12 @@ function Register() {
     link: "/login"
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(userId);
+    console.log(password);
+  }
+
   return (
     <div className="register">
       <div className="registerContainer">
@@ -199,7 +206,7 @@ function Register() {
           )}
         </div>
         <div className="registerButton">
-          <Button btnData={btnData} />
+          <Button btnData={btnData} onSubmit={handleSubmit}/>
         </div>
       </div>
     </div>
