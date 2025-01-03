@@ -1,14 +1,13 @@
 .container {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .content {
-    text-align: center;
-    margin-bottom: 10vh;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.content {
+    text-align: center;
     .textBox {
       font-size: 3rem !important;  // 더 작은 크기로 재정의
     }

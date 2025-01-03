@@ -1,3 +1,4 @@
+
 import React, {useState, useEffect} from 'react'
 import Map from '../components/Map'
 import Button from '../components/button'
@@ -8,15 +9,16 @@ function GetOnGetOff() {
 
   const [selectedAddress, setSelectedAddress] = useState('');
   const [currentPosition, setCurrentPosition] = useState(null);
+
   const height = 600;
   const btnData = {
     text: "이 위치로 설정",
-    link: "/"
-  }
+    link: "/",
+  };
 
   const handleSearch = (address) => {
     setSelectedAddress(address);
-    console.log('검색한 주소:', address);
+    console.log("검색한 주소:", address);
   };
 
   // 현재 위치 가져오기
@@ -41,11 +43,13 @@ function GetOnGetOff() {
   return (
     <div className="get-on-get-off">
       <SearchBar onSearch={handleSearch} />
+
         <Map height={height} currentPosition={currentPosition}/>
+
       <div className="button-container">
-        <Button btnData={btnData}/>
+        <Button btnData={btnData} />
       </div>
     </div>
-  )
+  );
 }
-export default GetOnGetOff
+export default GetOnGetOff;
