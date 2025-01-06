@@ -53,14 +53,22 @@ function VoiceRecordList() {
   // 검색 결과 항목 클릭 시
   const handlePlaceSelect = (place) => {
     // 기존의 state 값을 가져옴
+
+    
     const currentState = location.state || {};
+
+    // 좌표값을 숫자로 변환
+    const coordinates = {
+      lat: parseFloat(place.coordinates.lat),
+      lng: parseFloat(place.coordinates.lng)
+    };
 
     // 새로운 위치 정보와 기존 정보를 합침
     const newState = {
       ...currentState, // 기존 state 유지
       [locationType]: {
         address: place.text,
-        coordinates: place.coordinates,
+        coordinates: coordinates,
       },
     };
 
