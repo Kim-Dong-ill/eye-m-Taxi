@@ -13,7 +13,7 @@ function GetOnGetOff() {
   const navigate = useNavigate();
   const location = useLocation();
   const locationType = new URLSearchParams(location.search).get("locationType");
-  console.log("GetOnGetOff - location.state:", location.state);
+  console.log("currentPosition:", currentPosition?currentPosition:null);
 
   const height = 600;
   const btnData = {
@@ -92,24 +92,12 @@ function GetOnGetOff() {
     }
   };
 
-  // 현재 위치 가져오기
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentPosition({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error("Error getting current position:", error);
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
-  }, []);
+  
+
+    // 현재 위치 업데이트 핸들러
+    const handleCurrentPosition = (position) => {
+      setCurrentPosition(position);
+    };
 
   return (
     <div className="get-on-get-off">
@@ -119,7 +107,7 @@ function GetOnGetOff() {
         locationState={location.state}  // location.state를 SearchBar에 전달
       />
 
-      <Map height={height} currentPosition={currentPosition} />
+      <Map height={height} handleCurrentPosition={handleCurrentPosition}/>
 
       <div className="button-container" onClick={handleSetLocation}>
         <Button btnData={btnData} />
