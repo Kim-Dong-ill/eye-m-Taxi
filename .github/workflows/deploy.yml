@@ -10,6 +10,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+# 1. 인증 부분 변경
+    - name: Google Auth        # 변경됨
+      id: auth                 # 변경됨
+      uses: google-github-actions/auth@v1  # 변경됨
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}  # 추가됨
+        
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
       with:
@@ -41,7 +49,7 @@ jobs:
         npm run build
 
     - name: Deploy to Cloud Storage
-      uses: google-github-actions/setup-gcloud@v0
+      uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
