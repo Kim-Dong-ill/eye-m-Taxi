@@ -1,6 +1,6 @@
 service: eyemtaxi-back
 
-runtime: nodejs18
+runtime: nodejs20
 
 env: standard
 
