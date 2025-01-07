@@ -11,13 +11,18 @@
     flex: 1;
     background-color: var(--bg-background);
     color: var(--bg-yellow);
-    padding-left: 20px;
     border: none;
     outline: none;
-    font-size: 36px;
+    font-size: 32px;
+    white-space: nowrap;      // 텍스트가 한 줄로 유지되도록 설정
+    // overflow: hidden;         // 넘치는 텍스트 숨기기
+    text-overflow: ellipsis; // 말줄임표(...) 표시
+    max-width: clamp(280px, 50%, 500px)
   }
 
   .mic-button {
+    width: clamp(40px, 5vw, 50px);  // 뷰포트 너비에 따라 30px에서 50px 사이로 조절
+    height: clamp(40px, 5vw, 50px); // 정사각형 유지를 위해 높이도 동일
     background-color: var(--bg-background);
     border: none;
     cursor: pointer;
@@ -33,4 +38,8 @@
       opacity: 0.9;
     }
   }
+}
+form{
+  display: flex;
+  justify-content: space-between;
 }
