@@ -1,5 +1,6 @@
 .layout{
-    width: 530px;
+    min-width: 320px;
+    max-width: 700px;
     height: 100%;
     background-color: var(--bg-background);
     .layoutContent{
