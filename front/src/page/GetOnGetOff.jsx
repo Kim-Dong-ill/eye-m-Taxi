@@ -37,7 +37,6 @@ function GetOnGetOff() {
               address: address.address.address_name,
               roadAddress: address.road_address?.address_name,
             });
-            console.log(address);
           } else {
             reject(new Error("주소 변환 실패"));
           }
@@ -84,7 +83,7 @@ function GetOnGetOff() {
         navigate("/", {
           state: newState,
         });
-        console.log("전달되는 state:", newState); // state 확인용 로그
+        // console.log("전달되는 state:", newState); // state 확인용 로그
       }
     } catch (error) {
       console.error("주소 변환 중 오류 발생:", error);

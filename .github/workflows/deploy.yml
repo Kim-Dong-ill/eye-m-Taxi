@@ -1,0 +1,51 @@
+name: Deploy to Google Cloud
+
+on:
+  push:
+    branches: [ main-backup ]  # main 브랜치에 push될 때 실행
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Deploy Backend
+      run: |
+        cd backend  # 백엔드 디렉토리로 이동
+        gcloud app deploy  # App Engine에 직접 배포
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Build Frontend
+      run: |
+        cd frontend  # 프론트엔드 디렉토리로 이동
+        npm install
+        npm run build
+
+    - name: Deploy to Cloud Storage
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Upload to Cloud Storage
+      run: |
+        cd frontend/build  # 빌드된 파일이 있는 디렉토리로 이동
+        gsutil -m rsync -r . gs://${{ secrets.GCP_BUCKET_NAME }}
