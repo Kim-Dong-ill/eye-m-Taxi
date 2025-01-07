@@ -60,8 +60,8 @@ console.log(dropoffLocation);
           하차
         </div>
         <div>
-        <div>승차 : {pickupLocation?.address}</div>
-        <div>하차 : {dropoffLocation?.address}</div>
+        {pickupLocation?.address && <div>승차 : {pickupLocation.address}</div>}
+        {dropoffLocation?.address && <div>하차 : {dropoffLocation.address}</div>}
         </div>
       </div>
     </div>

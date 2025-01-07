@@ -5,35 +5,24 @@ import '../css/map.css'
 
 function Map({height, handleCurrentPosition}) {
   const [mapHeight, setMapHeight] = useState(height);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-
     const mapContainerRef = useRef(null);
     const currentMapCenter = useMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, handleCurrentPosition);
     
     useEffect(() => {
-      // 키보드 표시 여부 감지
-      const handleFocus = () => setIsKeyboardVisible(true);
-      const handleBlur = () => setIsKeyboardVisible(false);
-      
-      // 모든 input 요소에 대해 이벤트 리스너 추가
-      const inputs = document.querySelectorAll('input');
-      inputs.forEach(input => {
-          input.addEventListener('focus', handleFocus);
-          input.addEventListener('blur', handleBlur);
-      });
+      // 뷰포트 높이 변화 감지
+      const handleResize = () => {
+          const viewportHeight = window.visualViewport.height;
+          setMapHeight(Math.min(600, viewportHeight * 0.6)); // 뷰포트 높이의 60% 또는 최대 600px
+      };
+
+      // visualViewport API 사용
+      window.visualViewport.addEventListener('resize', handleResize);
+      handleResize(); // 초기 높이 설정
 
       return () => {
-          inputs.forEach(input => {
-              input.removeEventListener('focus', handleFocus);
-              input.removeEventListener('blur', handleBlur);
-          });
+          window.visualViewport.removeEventListener('resize', handleResize);
       };
   }, []);
-
-  // 키보드가 보일 때는 지도를 숨김
-  if (isKeyboardVisible) {
-      return null;
-  }
 
   return (
     <div className="map-wrapper" style={{ position: 'relative', width: '100%',height: mapHeight}}>
