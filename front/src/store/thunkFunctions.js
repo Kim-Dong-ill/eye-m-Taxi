@@ -7,6 +7,8 @@ export const loginUser = createAsyncThunk(
     
     try {
       const res = await axiosInstance.post("/member/login", body);
+      console.log("로그인 요청 URL:", axiosInstance.defaults.baseURL + "/member/login");
+
       console.log("로그인 성공", res.data);
 
       return res.data;
