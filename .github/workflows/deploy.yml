@@ -2,7 +2,7 @@ name: Deploy to Google Cloud
 
 on:
   push:
-    branches: [ main-backup ]  # main 브랜치에 push될 때 실행
+    branches: [ main ]  # main 브랜치에 push될 때 실행
 
 jobs:
   deploy-backend:
@@ -19,7 +19,7 @@ jobs:
 
     - name: Deploy Backend
       run: |
-        cd backend  # 백엔드 디렉토리로 이동
+        cd D:\Dongill\cursor\workspace\eye'm_Taxi\back  # 백엔드 디렉토리로 이동
         gcloud app deploy  # App Engine에 직접 배포
 
   deploy-frontend:
@@ -34,7 +34,7 @@ jobs:
 
     - name: Build Frontend
       run: |
-        cd frontend  # 프론트엔드 디렉토리로 이동
+        cd D:\Dongill\cursor\workspace\eye'm_Taxi\front  # 프론트엔드 디렉토리로 이동
         npm install
         npm run build
 
