@@ -15,7 +15,7 @@ env_variables:
   NODE_ENV: "production"
 
 beta_settings:
-  cloud_sql_instances: "winged-woods-442503-f1:asia-northeast3:codelab"
+  cloud_sql_instances: winged-woods-442503-f1:asia-northeast3:codelab
 
 handlers:
   - url: /.*
