@@ -30,9 +30,11 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'
+        node-version: '20'
 
     - name: Build Frontend
+      env:
+        VITE_KAKAO_APP_KEY: ${{ secrets.VITE_KAKAO_APP_KEY }}  # GitHub secrets에 추가 필요
       run: |
         cd front  # 프론트엔드 디렉토리로 이동
         npm install
