@@ -49,5 +49,5 @@ jobs:
 
     - name: Upload to Cloud Storage
       run: |
-        cd front/build  # 빌드된 파일이 있는 디렉토리로 이동
+        cd front/dist  # 빌드된 파일이 있는 디렉토리로 이동
         gsutil -m rsync -r . gs://${{ secrets.GCP_BUCKET_NAME }}
