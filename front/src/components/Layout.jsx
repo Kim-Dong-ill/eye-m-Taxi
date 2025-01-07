@@ -1,6 +1,6 @@
 import React from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import '../../css/layout.scss'
+import '../css/layout.scss'
 import Header from './Header'
 
 function layout() {
