@@ -9,7 +9,7 @@ function Map({height, handleCurrentPosition}) {
     const currentMapCenter = useMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, handleCurrentPosition);
     
   return (
-    <div className="map-wrapper" style={{ position: 'relative', width: '100%', height: `${height}px` }}>
+    <div className="map-wrapper" style={{ position: 'relative', width: '100%',maxHeight: height, minHeight: '450px'}}>
             <div ref={mapContainerRef} className='mapContainer' style={{width: '100%', height: '100%'}}/>
             <img 
                 src="/icon/marker2.svg"  
