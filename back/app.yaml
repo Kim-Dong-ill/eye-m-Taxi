@@ -13,6 +13,12 @@ automatic_scaling:
 
 env_variables:
   NODE_ENV: "production"
+  DB_USER: "codelab"
+  DB_PASSWORD: "codelab1234"
+  DB_NAME: "postgres"
+  DB_SCHEMA: "eyemtaxi"
+  JWT_SECRET: "eyemtaxi"
+  CORS_ORIGIN: "https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com"
 
 beta_settings:
   cloud_sql_instances: winged-woods-442503-f1:asia-northeast3:codelab
