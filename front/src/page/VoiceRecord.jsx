@@ -13,8 +13,18 @@ function VoiceRecord() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    initializeSpeechKit();
+    checkBrowserSupport();
+    alert("VoiceRecord 진입");
   }, []);
+
+  const checkBrowserSupport = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.');
+      navigate(-1);
+      return;
+    }
+    initializeSpeechKit();
+  };
 
    // SpeechKit 인스턴스를 생성합니다
    const initializeSpeechKit = () => {
@@ -26,6 +36,15 @@ function VoiceRecord() {
     };
 
     const kit = new SpeechKit(options);
+
+    // 마이크 사용 권한 없을 때 처리
+    kit.recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      if (event.error === 'not-allowed') {
+        alert('마이크 사용 권한이 필요합니다.');
+        navigate(-1);
+      }
+    };
 
      // 음성 인식 결과를 처리하는 이벤트 리스너 추가
      kit.recognition.onresult = (event) => {
