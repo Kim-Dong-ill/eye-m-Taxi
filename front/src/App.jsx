@@ -12,10 +12,10 @@ import StarScope from "./page/StarScope";
 import VoiceRecord from "./page/VoiceRecord";
 import VoiceRecordList from "./page/VoiceRecordList";
 import DriveFinish from "./page/DriveFinish";
-import Layout from "./components/layout/Layout";
-import ProtectedRoute from "./components/layout/ProtectedRoute";
+import Layout from "./components/layout/Layout.jsx";
+import ProtectedRoute from "./components/layout/ProtectedRoute.jsx";
 import "./css/app.scss";
-import PublicRoute from "./components/layout/PublicRoute";
+import PublicRoute from "./components/layout/PublicRoute.jsx";
 
 function App() {
   return (
