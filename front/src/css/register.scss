@@ -5,7 +5,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
+    .registerContainer{
+        .registerInputBox{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    }
     .error-message {
         color: red;
         font-size: 20px;

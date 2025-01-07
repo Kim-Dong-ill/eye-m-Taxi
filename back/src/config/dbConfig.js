@@ -1,7 +1,12 @@
 import pg from 'pg'
 import dotenv from 'dotenv'
 
-dotenv.config()
+// NODE_ENV에 따라 다른 환경 파일 로드
+dotenv.config({
+    path: process.env.NODE_ENV === 'production' 
+        ? '.env.production'
+        : '.env'
+})
 
 const dbConfig =  {
     host: process.env.DB_HOST,

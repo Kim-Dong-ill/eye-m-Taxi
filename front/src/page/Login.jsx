@@ -83,7 +83,7 @@ function Login() {
       <div className="loginContainer">
         <Header />
         <form onSubmit={handleLogin}>
-          <div>
+          <div  className="loginInputBox">
             <InputBox data={data} handleChange={handleChange} />
           </div>
           <button className="loginSubmitBtn" type="submit">로그인</button>

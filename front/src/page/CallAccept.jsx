@@ -1,8 +1,8 @@
 import React from "react";
 import Button from "../components/button";
 import Map from "../components/Map";
-import sound from "../../public/icon/Sound.svg";
-import call from "../../public/icon/Call.svg";
+import sound from "/icon/sound.svg";
+import call from "/icon/call.svg";
 
 import "../css/callAccept.scss";
 
