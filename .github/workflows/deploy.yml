@@ -2,7 +2,7 @@ name: Deploy to Google Cloud
 
 on:
   push:
-    branches: [ main-backup ]  # main 브랜치에 push될 때 실행
+    branches: [ main ]  # main 브랜치에 push될 때 실행
 
 jobs:
   deploy-backend:
