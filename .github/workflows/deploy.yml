@@ -17,7 +17,8 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}  # 추가됨
-        
+        token_format: 'access_token'  # 추가됨
+
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
       with:
@@ -47,6 +48,15 @@ jobs:
         cd front  # 프론트엔드 디렉토리로 이동
         npm install
         npm run build
+
+    - name: Google Auth
+      id: auth
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        token_format: 'access_token'  # 추가됨
+        access_token_lifetime: '300s'  # 추가됨
 
     - name: Deploy to Cloud Storage
       uses: google-github-actions/setup-gcloud@v1
