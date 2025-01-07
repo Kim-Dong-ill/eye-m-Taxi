@@ -58,7 +58,8 @@ jobs:
         with:
           version: '>= 363.0.0'
 
-      - name: Upload to Cloud Storage
+       # Cloud Storage 배포 대신 App Engine 배포로 변경
+      - name: Deploy Frontend
         run: |
-          cd front/dist
-          gsutil -m cp -r * gs://${{ secrets.GCP_BUCKET_NAME }}/
+          cd front
+          gcloud app deploy app.yaml --project=${{ secrets.GCP_PROJECT_ID }}
