@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Header from "../components/layout/Header";
+import Header from "../components/contain/Header";
 import InputBox from "../components/InputBox";
 import "../css/login.scss";
 import user from "../../public/icon/Person.svg";
