@@ -19,7 +19,7 @@ jobs:
 
     - name: Deploy Backend
       run: |
-        cd D:\Dongill\cursor\workspace\eye'm_Taxi\back  # 백엔드 디렉토리로 이동
+        cd back  # 백엔드 디렉토리로 이동
         gcloud app deploy  # App Engine에 직접 배포
 
   deploy-frontend:
@@ -30,11 +30,11 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'
+        node-version: '18'
 
     - name: Build Frontend
       run: |
-        cd D:\Dongill\cursor\workspace\eye'm_Taxi\front  # 프론트엔드 디렉토리로 이동
+        cd front  # 프론트엔드 디렉토리로 이동
         npm install
         npm run build
 
@@ -47,5 +47,5 @@ jobs:
 
     - name: Upload to Cloud Storage
       run: |
-        cd frontend/build  # 빌드된 파일이 있는 디렉토리로 이동
+        cd front/build  # 빌드된 파일이 있는 디렉토리로 이동
         gsutil -m rsync -r . gs://${{ secrets.GCP_BUCKET_NAME }}
