@@ -44,6 +44,7 @@ jobs:
           VITE_KAKAO_APP_KEY: ${{ secrets.VITE_KAKAO_APP_KEY }}
         run: |
           cd front
+          echo "VITE_NODE_SERVER_URL=${{ secrets.VITE_NODE_SERVER_URL }}" > .env.production
           npm install
           npm run build
 
