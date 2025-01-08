@@ -126,8 +126,8 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
               let aspectRatio = rect.size.width / rect.size.height;
 
               // 번호판 비율 확인 (한국 번호판 비율: 약 2.3:1 ~ 3.5:1)
-              if ((aspectRatio > 2.3 && aspectRatio < 3.5) || 
-                  (1/aspectRatio > 2.3 && 1/aspectRatio < 3.5)) {
+              if ((aspectRatio > 2.3 && aspectRatio < 4.7) || 
+                  (1/aspectRatio > 2.3 && 1/aspectRatio < 4.7)) {
                 plateContours.push({
                   contour: cnt,
                   rect: rect,
@@ -141,7 +141,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         
         // 7. 가장 적합한 번호판 후보 선택 (면적이 큰 순서로)
         plateContours.sort((a, b) => b.area - a.area);
-        
+
         for (let plateCandidate of plateContours) {
           let rect = plateCandidate.rect;
           
