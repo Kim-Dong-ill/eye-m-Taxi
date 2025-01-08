@@ -111,25 +111,28 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         let hierarchy = new cvObject.Mat();
         cvObject.findContours(edges, contours, hierarchy, cvObject.RETR_LIST, cvObject.CHAIN_APPROX_SIMPLE);
         alert('6');
-        // 번호판 후보 영역 검출
-        for (let i = 0; i < contours.size(); ++i) {
-          let cnt = contours.get(i);
-          let area = cvObject.contourArea(cnt);
-          alert('7');
-          if (area > 5000 && area < 100000) {
-            let rect = cvObject.boundingRect(cnt);
-            let aspectRatio = rect.width / rect.height;
+        // 번호판 후보 영역 검출  
+        try {
+          for (let i = 0; i < contours.size(); ++i) {
+            let cnt = contours.get(i);
+            let area = cv.contourArea(cnt);
             alert('8');
+            alert(area);
+          if (area > 5000 && area < 100000) {
+            let rect = cv.boundingRect(cnt);
+            let aspectRatio = rect.width / rect.height;
+            alert('9');
+            
             if (aspectRatio > 2 && aspectRatio < 3) {
               alert('번호판 영역 감지!');
               
-              let point1 = new cvObject.Point(rect.x, rect.y);
-              let point2 = new cvObject.Point(rect.x + rect.width, rect.y + rect.height);
-              cvObject.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
-  
+              let point1 = new cv.Point(rect.x, rect.y);
+              let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+              cv.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
+
               let plateRegion = src.roi(rect);
               let tempCanvas = document.createElement('canvas');
-              cvObject.imshow(tempCanvas, plateRegion);
+              cv.imshow(tempCanvas, plateRegion);
               
               Tesseract.recognize(
                 tempCanvas,
@@ -146,12 +149,15 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
                   navigate('/driveing');
                 }
               });
-  
+
               plateRegion.delete();
             }
           }
           cnt.delete();
         }
+      } catch (contourError) {
+        alert('윤곽선 처리 오류: ' + contourError.message);
+      }
   
         // 결과를 캔버스에 표시
         cv.imshow(canvasRef.current, src);
