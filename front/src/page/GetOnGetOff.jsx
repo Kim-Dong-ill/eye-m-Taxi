@@ -14,7 +14,7 @@ function GetOnGetOff() {
   const location = useLocation();
   const locationType = new URLSearchParams(location.search).get("locationType");
   console.log("currentPosition:", currentPosition?currentPosition:null);
-
+alert("GetOnGetOff 진입");
   const height = 600;
   const btnData = {
     text: "이 위치로 설정",
