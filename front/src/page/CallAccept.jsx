@@ -80,6 +80,7 @@ function CallAccept() {
     <div className="callAccept">
     {showCamera ? (
       <OpenCVCamera 
+        expectedPlateNumber={carNumber}
         onPlateDetected={(rect) => {
           // 번호판 영역이 감지되면 처리
           console.log('번호판 영역 감지:', rect);
