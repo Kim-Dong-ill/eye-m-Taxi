@@ -115,24 +115,24 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         try {
           for (let i = 0; i < contours.size(); ++i) {
             let cnt = contours.get(i);
-            let area = cv.contourArea(cnt);
-            alert('8');
-            alert(area);
+            let area = cvObject.contourArea(cnt);
+            // alert('8');
+            // alert(area);
           if (area > 5000 && area < 100000) {
-            let rect = cv.boundingRect(cnt);
+            let rect = cvObject.boundingRect(cnt);
             let aspectRatio = rect.width / rect.height;
             alert('9');
             
             if (aspectRatio > 2 && aspectRatio < 3) {
               alert('번호판 영역 감지!');
               
-              let point1 = new cv.Point(rect.x, rect.y);
-              let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-              cv.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
+              let point1 = new cvObject.Point(rect.x, rect.y);
+              let point2 = new cvObject.Point(rect.x + rect.width, rect.y + rect.height);
+              cvObject.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
 
               let plateRegion = src.roi(rect);
               let tempCanvas = document.createElement('canvas');
-              cv.imshow(tempCanvas, plateRegion);
+              cvObject.imshow(tempCanvas, plateRegion);
               
               Tesseract.recognize(
                 tempCanvas,
@@ -160,7 +160,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
       }
   
         // 결과를 캔버스에 표시
-        cv.imshow(canvasRef.current, src);
+        cvObject.imshow(canvasRef.current, src);
   
         // 메모리 해제
         src.delete();
