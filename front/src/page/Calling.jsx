@@ -3,7 +3,7 @@ import TextBox from '../components/TextBox'
 import Button from '../components/button'
 import '../css/calling.scss'
 import { useNavigate } from 'react-router-dom';
-import CameraScanner from '../components/CameraScanner';
+import OpenCVCamera from '../components/OpenCVCamera';
 
 function Calling() {
 
@@ -54,15 +54,14 @@ const generateRandomCarNumber = () => {
 
   return (
     <div className='calling'>
-    {showCamera ? (
-      <CameraScanner 
-      expectedPlateNumber={carNumber}
-      onScanComplete={(isMatch) => {
-          if (isMatch) {
-            navigate('/callAccept');
-          }
-        }}
-      />
+     {showCamera ? (
+        <OpenCVCamera 
+          onPlateDetected={(rect) => {
+            // 번호판 영역이 감지되면 처리
+            console.log('번호판 영역 감지:', rect);
+            // 여기서 Tesseract.js와 연동하여 텍스트 인식 가능
+          }}
+        />
     ) : (
       <>
         <TextBox 
