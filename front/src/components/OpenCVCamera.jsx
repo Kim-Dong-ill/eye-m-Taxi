@@ -28,7 +28,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
     const waitForOpenCV = () => {
       if (window.cv) {
         setIsLoaded(true);
-        startCamera();
+        startCamera(true);
         alert('OpenCV 로딩 완료');
       } else {
         alert('OpenCV 로딩 중...');
@@ -40,7 +40,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
     return () => stopCamera();
   }, []);
 
-  const startCamera = async () => {
+  const startCamera = async (isLoaded) => {
     try {
       const constraints = {
         video: {
@@ -57,7 +57,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
           videoRef.current.play();
           setHasCamera(true);
           alert('카메라 시작');
-          requestAnimationFrame(processVideo);
+          requestAnimationFrame(() => processVideo(isLoaded, true));
         };
       }
     } catch (err) {
@@ -67,7 +67,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
     }
   };
 
-  const processVideo = () => {
+  const processVideo = (isLoaded, hasCamera) => {
     if (hasCamera && isLoaded && videoRef.current && canvasRef.current) {
       try {
         const cv = window.cv;
@@ -148,7 +148,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         contours.delete();
         hierarchy.delete();
 
-        requestAnimationFrame(processVideo);
+        requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
       } catch (err) {
         alert('이미지 처리 오류: ' + err.message);
       }
@@ -159,7 +159,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         ', hasVideo=' + !!videoRef.current + 
         ', hasCanvas=' + !!canvasRef.current
       );
-      requestAnimationFrame(processVideo);
+      requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
     }
   };
 
