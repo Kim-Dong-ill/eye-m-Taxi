@@ -71,104 +71,132 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
 
   const processVideo = (isLoaded, hasCamera) => {
     if (!cvObject) {
-      cvObject = window.cv;  // 다시 한번 시도
+      cvObject = window.cv;
     }
     if (isLoaded && hasCamera && videoRef.current && canvasRef.current) {
       try {
         if (!cvObject) {
           alert('OpenCV 객체를 찾을 수 없음');
           requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
-
           return;
         }
         const cv = window.cv;
         const video = videoRef.current;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        // 캔버스 크기를 비디오 크기에 맞춤
+        
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        
-        // 비디오 프레임을 캔버스에 그리기
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        // Mat 객체 생성
+  
+        // 1. 원본 이미지 읽기
         let src = cvObject.imread(canvasRef.current);
+        
+        // 2. 그레이스케일 변환
         let gray = new cvObject.Mat();
         cvObject.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-        // 이미지 전처리
+        
+        // 3. 히스토그램 평활화로 대비 개선
+        let equalized = new cvObject.Mat();
+        cvObject.equalizeHist(gray, equalized);
+        
+        // 4. 가우시안 블러로 노이즈 제거
         let blurred = new cvObject.Mat();
-        cvObject.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-        // 엣지 검출
-        let edges = new cvObject.Mat();
-        cvObject.Canny(blurred, edges, 100, 200);
-        // 윤곽선 검출
+        cvObject.GaussianBlur(equalized, blurred, new cv.Size(5, 5), 0);
+        
+        // 5. 적응형 이진화
+        let binary = new cvObject.Mat();
+        cvObject.adaptiveThreshold(blurred, binary, 255,
+          cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 2);
+        
+        // 6. 모폴로지 연산으로 노이즈 제거 및 문자 영역 강화
+        let kernel = cvObject.getStructuringElement(cv.MORPH_RECT, new cv.Size(3, 3));
+        let morphed = new cvObject.Mat();
+        cvObject.morphologyEx(binary, morphed, cv.MORPH_CLOSE, kernel);
+        
+        // 7. 윤곽선 검출
         let contours = new cvObject.MatVector();
         let hierarchy = new cvObject.Mat();
-        cvObject.findContours(edges, contours, hierarchy, cvObject.RETR_LIST, cvObject.CHAIN_APPROX_SIMPLE);
-        // 번호판 후보 영역 검출  
-        try {
-          for (let i = 0; i < contours.size(); ++i) {
-            let cnt = contours.get(i);
-            let area = cvObject.contourArea(cnt);
-            // alert('8');
-            // alert(area);
-          if (area > 5000 && area < 100000) {
+        cvObject.findContours(morphed, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+        
+        // 8. 번호판 후보 필터링
+        for (let i = 0; i < contours.size(); ++i) {
+          let cnt = contours.get(i);
+          let area = cvObject.contourArea(cnt);
+          
+          // 면적 기준 필터링 (번호판 크기에 맞는 영역만 선택)
+          if (area > 1000 && area < 50000) {
+            // 윤곽선을 감싸는 최소 사각형 찾기
             let rect = cvObject.boundingRect(cnt);
             let aspectRatio = rect.width / rect.height;
             
-            if (aspectRatio > 2 && aspectRatio < 3) {
-              
-              let point1 = new cvObject.Point(rect.x, rect.y);
-              let point2 = new cvObject.Point(rect.x + rect.width, rect.y + rect.height);
-              cvObject.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
-              let plateRegion = src.roi(rect);
-              let tempCanvas = document.createElement('canvas');
-              cvObject.imshow(tempCanvas, plateRegion);
-              Tesseract.recognize(
-                tempCanvas,
-                'kor',
-                { logger: m => console.log('OCR Progress:', m) }
-              ).then(({ data: { text } }) => {
-                const cleanText = text.replace(/[^0-9가-힣]/g, '');
-                alert('인식된 번호판: ' + cleanText);
-                setDetectedPlate(cleanText);
+            // 번호판의 일반적인 가로세로 비율 확인 (한국 번호판 비율 고려)
+            if (aspectRatio > 2 && aspectRatio < 4) {
+              // 기울기가 심하지 않은 것만 선택
+              let minRect = cvObject.minAreaRect(cnt);
+              let angle = minRect.angle;
+              if (Math.abs(angle) < 20) {  // 20도 이하의 기울기만 허용
                 
-                if (cleanText.includes(expectedPlateNumber)) {
-                  alert('일치하는 번호판 발견!');
-                  stopCamera();
-                  navigate('/driveing');
-                }
-              });
-
-              plateRegion.delete();
+                // 사각형 그리기
+                let point1 = new cvObject.Point(rect.x, rect.y);
+                let point2 = new cvObject.Point(rect.x + rect.width, rect.y + rect.height);
+                cvObject.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
+                
+                // 번호판 영역 추출
+                let plateRegion = src.roi(rect);
+                
+                // OCR을 위한 전처리
+                let tempCanvas = document.createElement('canvas');
+                cvObject.imshow(tempCanvas, plateRegion);
+                
+                // OCR 수행
+                Tesseract.recognize(
+                  tempCanvas,
+                  'kor',
+                  { 
+                    logger: m => console.log('OCR Progress:', m),
+                    tessedit_char_whitelist: '0123456789가나다라마바사아자차카타파하',
+                    tessedit_pageseg_mode: '7'  // 단일 텍스트 라인 모드
+                  }
+                ).then(({ data: { text } }) => {
+                  const cleanText = text.replace(/[^0-9가-힣]/g, '');
+                  if (cleanText.length >= 7) {  // 일반적인 번호판 길이 확인
+                    setDetectedPlate(cleanText);
+                    if (cleanText.includes(expectedPlateNumber)) {
+                      alert('일치하는 번호판 발견!');
+                      stopCamera();
+                      navigate('/driveing');
+                    }
+                  }
+                });
+  
+                plateRegion.delete();
+              }
             }
           }
           cnt.delete();
         }
-      } catch (contourError) {
-        alert('윤곽선 처리 오류: ' + contourError.message);
-      }
   
-        // 결과를 캔버스에 표시
+        // 결과 표시
         cvObject.imshow(canvasRef.current, src);
   
         // 메모리 해제
         src.delete();
         gray.delete();
+        equalized.delete();
         blurred.delete();
-        edges.delete();
+        binary.delete();
+        morphed.delete();
+        kernel.delete();
         contours.delete();
         hierarchy.delete();
   
-        // 다음 프레임 처리를 위한 재귀 호출
         requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
       } catch (err) {
-        alert('이미지 처리 오류: ' + err.message);
-        // 에러가 발생해도 계속 다음 프레임 처리
+        console.error('이미지 처리 오류:', err);
         requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
       }
     } else {
-      // 조건이 충족되지 않아도 계속 다음 프레임 처리
       requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
     }
   };
