@@ -26,7 +26,7 @@ function CallAccept() {
     if (remainingMinutes <= 1) {
       // 1분이 되면 5초 후에 /driving 페이지로 이동
       const redirectTimer = setTimeout(() => {
-        // navigate("/driveing");
+        navigate("/driveing");
       }, 3000);
 
       return () => clearTimeout(redirectTimer);
