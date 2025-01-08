@@ -20,6 +20,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
       tracks.forEach(track => track.stop());
       videoRef.current.srcObject = null;
       setHasCamera(false);
+      alert("카메라 종료");
     }
   };
 
@@ -55,6 +56,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         videoRef.current.onloadedmetadata = () => {
           videoRef.current.play();
           setHasCamera(true);
+          alert('카메라 시작');
           requestAnimationFrame(processVideo);
         };
       }
@@ -65,10 +67,33 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   };
 
   const processVideo = () => {
-    if (!isLoaded || !videoRef.current || !canvasRef.current || !hasCamera) {
-      alert('Missing required elements:', { isLoaded, hasCamera });
-      return;
-    }
+      // 각 요소의 상태를 개별적으로 확인
+  alert('Checking requirements:', {
+    isLoaded,
+    hasVideo: !!videoRef.current,
+    hasCanvas: !!canvasRef.current,
+    hasCamera,
+    videoReady: videoRef.current?.readyState === 4
+  });
+
+  if (!isLoaded || !videoRef.current || !canvasRef.current || !hasCamera) {
+    alert('Missing elements:', {
+      isLoaded: !isLoaded,
+      noVideo: !videoRef.current,
+      noCanvas: !canvasRef.current,
+      noCamera: !hasCamera
+    });
+    // 다음 프레임 요청 추가
+    requestAnimationFrame(processVideo);
+    return;
+  }
+
+  // 비디오가 준비되지 않은 경우 대기
+  if (videoRef.current.readyState !== 4) {
+    alert('Video not ready yet');
+    requestAnimationFrame(processVideo);
+    return;
+  }
   
     try {
       const cv = window.cv;
