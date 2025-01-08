@@ -64,7 +64,7 @@ function CallAccept() {
     window.location.href = 'tel:01012345678'; // 실제 기사님 전화번호로 변경하세요
   };
 
-  const height = 450;
+  const height = 400;
 
   const btnData = [
     {
