@@ -8,7 +8,6 @@ function OpenCVCamera({ onPlateDetected }) {
   const [hasCamera, setHasCamera] = useState(false);
 
   useEffect(() => {
-    // OpenCV가 로드될 때까지 대기
     const waitForOpenCV = () => {
       if (window.cv) {
         setIsLoaded(true);
@@ -19,7 +18,6 @@ function OpenCVCamera({ onPlateDetected }) {
     };
     waitForOpenCV();
 
-    // 컴포넌트 언마운트 시 카메라 정리
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
@@ -44,7 +42,6 @@ function OpenCVCamera({ onPlateDetected }) {
         videoRef.current.onloadedmetadata = () => {
           videoRef.current.play();
           setHasCamera(true);
-          // 비디오 프레임 처리 시작
           requestAnimationFrame(processVideo);
         };
       }
@@ -63,43 +60,86 @@ function OpenCVCamera({ onPlateDetected }) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    // 비디오 크기에 맞게 캔버스 크기 조정
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
-    // 비디오 프레임을 캔버스에 그리기
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     try {
-      // ... 기존의 OpenCV 처리 코드 ...
+      let src = cv.imread(canvas);
+      let gray = new cv.Mat();
+      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+      // 적응형 임계값 처리
+      let binary = new cv.Mat();
+      cv.adaptiveThreshold(gray, binary, 255,
+        cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2);
+
+      // 윤곽선 찾기
+      let contours = new cv.MatVector();
+      let hierarchy = new cv.Mat();
+      cv.findContours(binary, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+
+      // 가능한 번호판 영역 검사
+      for (let i = 0; i < contours.size(); ++i) {
+        let cnt = contours.get(i);
+        let area = cv.contourArea(cnt);
+        
+        // 적절한 크기의 영역만 검사
+        if (area > 1000 && area < 50000) {
+          let rect = cv.boundingRect(cnt);
+          let aspectRatio = rect.width / rect.height;
+          
+          // 번호판의 일반적인 가로세로 비율 검사 (2:1 ~ 4:1)
+          if (aspectRatio > 2 && aspectRatio < 4) {
+            // 감지된 영역 표시
+            let point1 = new cv.Point(rect.x, rect.y);
+            let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+            cv.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
+            
+            // 번호판 감지 콜백
+            onPlateDetected && onPlateDetected(rect);
+          }
+        }
+        cnt.delete();
+      }
+
+      // 결과 표시
+      cv.imshow(canvas, src);
+
+      // 메모리 해제
+      src.delete();
+      gray.delete();
+      binary.delete();
+      contours.delete();
+      hierarchy.delete();
+
     } catch (err) {
       console.error('이미지 처리 오류:', err);
     }
 
-    // 다음 프레임 처리
     requestAnimationFrame(processVideo);
   };
 
   return (
     <div className="opencv-camera">
-    <video 
-      ref={videoRef}
-      playsInline
-      autoPlay
-      muted
-    />
-    <canvas ref={canvasRef} />
-    <div className="scanning-overlay">
-      <div className="scan-area"></div>
-      <p className="scan-text">번호판을 스캔해주세요</p>
-    </div>
-    {!isLoaded && <div className="loading">OpenCV 로딩 중...</div>}
-    {!hasCamera && isLoaded && (
-      <div className="error">
-        카메라를 시작할 수 없습니다. 카메라 권한을 확인해주세요.
+      <video 
+        ref={videoRef}
+        playsInline
+        autoPlay
+        muted
+      />
+      <canvas ref={canvasRef} />
+      <div className="scanning-overlay">
+
+        <p className="scan-text">번호판을 비춰주세요</p>
       </div>
-    )}
-  </div>
+      {!isLoaded && <div className="loading">OpenCV 로딩 중...</div>}
+      {!hasCamera && isLoaded && (
+        <div className="error">
+          카메라를 시작할 수 없습니다. 카메라 권한을 확인해주세요.
+        </div>
+      )}
+    </div>
   );
 }
 
