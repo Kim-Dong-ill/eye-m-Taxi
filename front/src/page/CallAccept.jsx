@@ -24,7 +24,6 @@ function CallAccept() {
   // 카운트다운 효과 수정
   useEffect(() => {
     if (remainingMinutes <= 1) {
-      // 1분이 되면 5초 후에 /driving 페이지로 이동
       const redirectTimer = setTimeout(() => {
         navigate("/driveing");
       }, 3000);
