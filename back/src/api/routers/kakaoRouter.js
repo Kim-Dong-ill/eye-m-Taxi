@@ -1,9 +1,10 @@
-import express from 'express'
+import express from 'express';
+import memberController from '../controllers/memberController.js';
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.send('kakao')
-})
+//카카오 로그인
+router.get('/login', memberController.loginWithKakao);
+  
 
 export default router;

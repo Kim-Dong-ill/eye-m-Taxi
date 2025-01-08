@@ -21,6 +21,7 @@ function GetOnGetOff() {
     console.log("검색한 주소:", address);
   };
 
+
   // 현재 위치 가져오기
   useEffect(() => {
     if (navigator.geolocation) {
@@ -44,7 +45,7 @@ function GetOnGetOff() {
     <div className="get-on-get-off">
       <SearchBar onSearch={handleSearch} />
 
-        <Map height={height} currentPosition={currentPosition}/>
+        <Map height={height} selectedAddress={selectedAddress} currentPosition={currentPosition}/>
 
       <div className="button-container">
         <Button btnData={btnData} />

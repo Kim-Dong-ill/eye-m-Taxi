@@ -22,10 +22,8 @@ const useMap = (mapContainerRef, style, config, currentPosition) => {
         // 지도 이동 완료 시 중심 좌표 업데이트
         mapRef.current.on('moveend', () => {
             const center = mapRef.current.getCenter();
-            setMapCenter({
-                lng: center.lng,
-                lat: center.lat
-            });
+            const newCenter = { lng: center.lng, lat: center.lat };
+            setMapCenter(newCenter);
         });
 
 

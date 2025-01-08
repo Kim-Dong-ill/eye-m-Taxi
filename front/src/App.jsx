@@ -16,6 +16,8 @@ import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import "./css/app.scss";
 import PublicRoute from "./components/layout/PublicRoute";
+import KakaoRedirectHandler from './page/KakaoRedirectHandler';
+
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
       <Routes>
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
+          <Route path="/kakao/callback" element={<KakaoRedirectHandler />} />
           <Route element={<Layout />}>
             <Route path="/register" element={<Register />} />
           </Route>

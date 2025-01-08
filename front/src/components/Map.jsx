@@ -3,10 +3,10 @@ import useMap from '../hooks/useMap'
 import { mapConfig } from '../config/mapConfig'
 import '../css/map.css'
 
-function Map({height, currentPosition}) {
+function Map({height, currentPosition, onCenterChange}) {
 
     const mapContainerRef = useRef(null);
-    const currentMapCenter = useMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, currentPosition);
+    const currentMapCenter = useMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, currentPosition, onCenterChange);
     
     console.log('현재 지도 중심 좌표:', currentMapCenter);
 
