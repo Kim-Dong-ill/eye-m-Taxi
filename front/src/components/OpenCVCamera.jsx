@@ -82,24 +82,24 @@ function OpenCVCamera({ onPlateDetected }) {
 
   return (
     <div className="opencv-camera">
-      <video 
-        ref={videoRef}
-        playsInline // iOS Safari에서 필요
-        autoPlay
-        muted // 자동 재생을 위해 필요
-        style={{ display: hasCamera ? 'block' : 'none' }}
-      />
-      <canvas 
-        ref={canvasRef}
-        style={{ display: hasCamera ? 'block' : 'none' }}
-      />
-      {!isLoaded && <div className="loading">OpenCV 로딩 중...</div>}
-      {!hasCamera && isLoaded && (
-        <div className="error">
-          카메라를 시작할 수 없습니다. 카메라 권한을 확인해주세요.
-        </div>
-      )}
+    <video 
+      ref={videoRef}
+      playsInline
+      autoPlay
+      muted
+    />
+    <canvas ref={canvasRef} />
+    <div className="scanning-overlay">
+      <div className="scan-area"></div>
+      <p className="scan-text">번호판을 스캔해주세요</p>
     </div>
+    {!isLoaded && <div className="loading">OpenCV 로딩 중...</div>}
+    {!hasCamera && isLoaded && (
+      <div className="error">
+        카메라를 시작할 수 없습니다. 카메라 권한을 확인해주세요.
+      </div>
+    )}
+  </div>
   );
 }
 

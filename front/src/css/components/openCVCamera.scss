@@ -3,27 +3,58 @@
   width: 100%;
   height: 100vh;
   background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
 
-  video, canvas {
+  video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  canvas {
     position: absolute;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .scanning-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .scan-area {
+      width: 80%;
+      height: 200px;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .scan-text {
+      color: white;
+      font-size: 18px;
+      text-align: center;
+    }
   }
 
   .loading, .error {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     color: white;
     font-size: 18px;
     text-align: center;
-    padding: 20px;
     background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
     border-radius: 8px;
   }
 }
