@@ -121,11 +121,9 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
               let point1 = new cvObject.Point(rect.x, rect.y);
               let point2 = new cvObject.Point(rect.x + rect.width, rect.y + rect.height);
               cvObject.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
-              alert('10');
               let plateRegion = src.roi(rect);
               let tempCanvas = document.createElement('canvas');
               cvObject.imshow(tempCanvas, plateRegion);
-              alert('11');
               Tesseract.recognize(
                 tempCanvas,
                 'kor',
