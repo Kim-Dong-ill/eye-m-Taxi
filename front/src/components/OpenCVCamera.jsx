@@ -3,7 +3,7 @@ import '../css/components/openCVCamera.scss';
 import Tesseract from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 
-let cvObject = window.cv;
+let cvObject = null;
 
 function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   const videoRef = useRef(null);
@@ -28,6 +28,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   useEffect(() => {
     const waitForOpenCV = () => {
       if (window.cv) {
+        cvObject = window.cv;
         setIsLoaded(true);
         startCamera(true);
         alert('OpenCV 로딩 완료');
@@ -69,10 +70,15 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   };
 
   const processVideo = (isLoaded, hasCamera) => {
+    if (!cvObject) {
+      cvObject = window.cv;  // 다시 한번 시도
+    }
     if (isLoaded && hasCamera && videoRef.current && canvasRef.current) {
       try {
         if (!cvObject) {
           alert('OpenCV 객체를 찾을 수 없음');
+          requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
+
           return;
         }
         const cv = window.cv;
