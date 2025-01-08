@@ -115,19 +115,17 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
           if (area > 5000 && area < 100000) {
             let rect = cvObject.boundingRect(cnt);
             let aspectRatio = rect.width / rect.height;
-            alert('9');
             
             if (aspectRatio > 2 && aspectRatio < 3) {
-              alert('번호판 영역 감지!');
               
               let point1 = new cvObject.Point(rect.x, rect.y);
               let point2 = new cvObject.Point(rect.x + rect.width, rect.y + rect.height);
               cvObject.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
-
+              alert('10');
               let plateRegion = src.roi(rect);
               let tempCanvas = document.createElement('canvas');
               cvObject.imshow(tempCanvas, plateRegion);
-              
+              alert('11');
               Tesseract.recognize(
                 tempCanvas,
                 'kor',
