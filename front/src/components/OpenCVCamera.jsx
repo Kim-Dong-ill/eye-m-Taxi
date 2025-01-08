@@ -68,21 +68,25 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   };
 
   const processVideo = (isLoaded, hasCamera) => {
-    if (hasCamera && isLoaded && videoRef.current && canvasRef.current) {
+    if (isLoaded && hasCamera && videoRef.current && canvasRef.current) {
       try {
         const cv = window.cv;
         const video = videoRef.current;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-
+  
+        // 캔버스 크기를 비디오 크기에 맞춤
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
+        
+        // 비디오 프레임을 캔버스에 그리기
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        let src = cv.imread(canvas);
+  
+        // Mat 객체 생성
+        let src = cv.imread(canvasRef.current);
         let gray = new cv.Mat();
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-
+  
         // 이미지 전처리
         let blurred = new cv.Mat();
         cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
@@ -90,12 +94,12 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         // 엣지 검출
         let edges = new cv.Mat();
         cv.Canny(blurred, edges, 100, 200);
-
+  
         // 윤곽선 검출
         let contours = new cv.MatVector();
         let hierarchy = new cv.Mat();
         cv.findContours(edges, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
-
+  
         // 번호판 후보 영역 검출
         for (let i = 0; i < contours.size(); ++i) {
           let cnt = contours.get(i);
@@ -111,7 +115,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
               let point1 = new cv.Point(rect.x, rect.y);
               let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
               cv.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
-
+  
               let plateRegion = src.roi(rect);
               let tempCanvas = document.createElement('canvas');
               cv.imshow(tempCanvas, plateRegion);
@@ -131,15 +135,16 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
                   navigate('/driveing');
                 }
               });
-
+  
               plateRegion.delete();
             }
           }
           cnt.delete();
         }
-
-        cv.imshow(canvas, src);
-
+  
+        // 결과를 캔버스에 표시
+        cv.imshow(canvasRef.current, src);
+  
         // 메모리 해제
         src.delete();
         gray.delete();
@@ -147,18 +152,16 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         edges.delete();
         contours.delete();
         hierarchy.delete();
-
+  
+        // 다음 프레임 처리를 위한 재귀 호출
         requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
       } catch (err) {
         alert('이미지 처리 오류: ' + err.message);
+        // 에러가 발생해도 계속 다음 프레임 처리
+        requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
       }
     } else {
-      alert('카메라 준비 상태 확인: ' + 
-        'hasCamera=' + hasCamera + 
-        ', isLoaded=' + isLoaded + 
-        ', hasVideo=' + !!videoRef.current + 
-        ', hasCanvas=' + !!canvasRef.current
-      );
+      // 조건이 충족되지 않아도 계속 다음 프레임 처리
       requestAnimationFrame(() => processVideo(isLoaded, hasCamera));
     }
   };
