@@ -31,7 +31,6 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         cvObject = window.cv;
         setIsLoaded(true);
         startCamera(true);
-        alert('OpenCV 로딩 완료');
       } else {
         alert('OpenCV 로딩 중...');
         setTimeout(waitForOpenCV, 500);
@@ -58,7 +57,6 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         videoRef.current.onloadedmetadata = () => {
           videoRef.current.play();
           setHasCamera(true);
-          alert('카메라 시작');
           requestAnimationFrame(() => processVideo(isLoaded, true));
         };
       }
@@ -108,7 +106,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         let contours = new cvObject.MatVector();
         let hierarchy = new cvObject.Mat();
         cvObject.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-        
+        alert('1');
         // 6. 번호판 후보 필터링
         let plateContours = [];
         for (let i = 0; i < contours.size(); ++i) {
@@ -122,14 +120,16 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
             let approx = new cvObject.Mat();
             cvObject.approxPolyDP(cnt, approx, 0.02 * perimeter, true);
             
+            alert('2');
             // 사각형 형태 확인 (4개의 꼭지점)
             if (approx.rows === 4) {
               let rect = cvObject.minAreaRect(cnt);
               let aspectRatio = rect.size.width / rect.size.height;
-              
+              alert('3');
               // 번호판 비율 확인 (한국 번호판 비율: 약 2.3:1 ~ 3.5:1)
               if ((aspectRatio > 2.3 && aspectRatio < 3.5) || 
                   (1/aspectRatio > 2.3 && 1/aspectRatio < 3.5)) {
+                alert('4');
                 plateContours.push({
                   contour: cnt,
                   rect: rect,
