@@ -9,6 +9,8 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   const canvasRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasCamera, setHasCamera] = useState(false);
+  const navigate = useNavigate();
+
 
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
