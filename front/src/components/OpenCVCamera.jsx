@@ -3,6 +3,7 @@ import '../css/components/openCVCamera.scss';
 import Tesseract from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 
+let cvObject = window.cv;
 
 function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   const videoRef = useRef(null);
@@ -70,55 +71,59 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   const processVideo = (isLoaded, hasCamera) => {
     if (isLoaded && hasCamera && videoRef.current && canvasRef.current) {
       try {
+        if (!cvObject) {
+          alert('OpenCV 객체를 찾을 수 없음');
+          return;
+        }
         const cv = window.cv;
         const video = videoRef.current;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-  
+        alert('1');
         // 캔버스 크기를 비디오 크기에 맞춤
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         
         // 비디오 프레임을 캔버스에 그리기
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
+        alert('2');
         // Mat 객체 생성
-        let src = cv.imread(canvasRef.current);
-        let gray = new cv.Mat();
-        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-  
+        let src = cvObject.imread(canvasRef.current);
+        let gray = new cvObject.Mat();
+        cvObject.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+        alert('3');
         // 이미지 전처리
-        let blurred = new cv.Mat();
-        cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-        
+        let blurred = new cvObject.Mat();
+        cvObject.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
+        alert('4');
         // 엣지 검출
-        let edges = new cv.Mat();
-        cv.Canny(blurred, edges, 100, 200);
-  
+        let edges = new cvObject.Mat();
+        cvObject.Canny(blurred, edges, 100, 200);
+        alert('5');
         // 윤곽선 검출
-        let contours = new cv.MatVector();
-        let hierarchy = new cv.Mat();
-        cv.findContours(edges, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
-  
+        let contours = new cvObject.MatVector();
+        let hierarchy = new cvObject.Mat();
+        cvObject.findContours(edges, contours, hierarchy, cvObject.RETR_LIST, cvObject.CHAIN_APPROX_SIMPLE);
+        alert('6');
         // 번호판 후보 영역 검출
         for (let i = 0; i < contours.size(); ++i) {
           let cnt = contours.get(i);
-          let area = cv.contourArea(cnt);
-          
+          let area = cvObject.contourArea(cnt);
+          alert('7');
           if (area > 5000 && area < 100000) {
-            let rect = cv.boundingRect(cnt);
+            let rect = cvObject.boundingRect(cnt);
             let aspectRatio = rect.width / rect.height;
-            
+            alert('8');
             if (aspectRatio > 2 && aspectRatio < 3) {
               alert('번호판 영역 감지!');
               
-              let point1 = new cv.Point(rect.x, rect.y);
-              let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-              cv.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
+              let point1 = new cvObject.Point(rect.x, rect.y);
+              let point2 = new cvObject.Point(rect.x + rect.width, rect.y + rect.height);
+              cvObject.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
   
               let plateRegion = src.roi(rect);
               let tempCanvas = document.createElement('canvas');
-              cv.imshow(tempCanvas, plateRegion);
+              cvObject.imshow(tempCanvas, plateRegion);
               
               Tesseract.recognize(
                 tempCanvas,
