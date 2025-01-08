@@ -62,132 +62,103 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
       }
     } catch (err) {
       console.error('카메라 접근 오류:', err);
+      alert('카메라 접근 오류:'+ err);
       setHasCamera(false);
     }
   };
 
   const processVideo = () => {
-      // 각 요소의 상태를 개별적으로 확인
-  alert('Checking requirements:', {
-    isLoaded,
-    hasVideo: !!videoRef.current,
-    hasCanvas: !!canvasRef.current,
-    hasCamera,
-    videoReady: videoRef.current?.readyState === 4
-  });
+    if (hasCamera && isLoaded && videoRef.current && canvasRef.current) {
+      try {
+        const cv = window.cv;
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
 
-  if (!isLoaded || !videoRef.current || !canvasRef.current || !hasCamera) {
-    alert('Missing elements:', {
-      isLoaded: !isLoaded,
-      noVideo: !videoRef.current,
-      noCanvas: !canvasRef.current,
-      noCamera: !hasCamera
-    });
-    // 다음 프레임 요청 추가
-    requestAnimationFrame(processVideo);
-    return;
-  }
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  // 비디오가 준비되지 않은 경우 대기
-  if (videoRef.current.readyState !== 4) {
-    alert('Video not ready yet');
-    requestAnimationFrame(processVideo);
-    return;
-  }
-  
-    try {
-      const cv = window.cv;
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-  
-      // 비디오 프레임 캡처
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-      // OpenCV 처리
-      let src = cv.imread(canvas);
-      let gray = new cv.Mat();
-      cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-  
-      // 이미지 전처리
-      let blurred = new cv.Mat();
-      cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-      
-      // 엣지 검출
-      let edges = new cv.Mat();
-      cv.Canny(blurred, edges, 100, 200);
-  
-      // 윤곽선 검출
-      let contours = new cv.MatVector();
-      let hierarchy = new cv.Mat();
-      cv.findContours(edges, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
-  
-      // 번호판 후보 영역 검출
-      for (let i = 0; i < contours.size(); ++i) {
-        let cnt = contours.get(i);
-        let area = cv.contourArea(cnt);
+        let src = cv.imread(canvas);
+        let gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+        // 이미지 전처리
+        let blurred = new cv.Mat();
+        cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
         
-        // 번호판 크기 범위 조정
-        if (area > 5000 && area < 100000) {
-          let rect = cv.boundingRect(cnt);
-          let aspectRatio = rect.width / rect.height;
+        // 엣지 검출
+        let edges = new cv.Mat();
+        cv.Canny(blurred, edges, 100, 200);
+
+        // 윤곽선 검출
+        let contours = new cv.MatVector();
+        let hierarchy = new cv.Mat();
+        cv.findContours(edges, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+
+        // 번호판 후보 영역 검출
+        for (let i = 0; i < contours.size(); ++i) {
+          let cnt = contours.get(i);
+          let area = cv.contourArea(cnt);
           
-          // 번호판 비율 범위 조정 (한국 번호판 비율: 약 2.3:1)
-          if (aspectRatio > 2 && aspectRatio < 3) {
-            console.log('Potential plate detected:', { area, aspectRatio });
+          if (area > 5000 && area < 100000) {
+            let rect = cv.boundingRect(cnt);
+            let aspectRatio = rect.width / rect.height;
             
-            // 감지된 영역 표시
-            let point1 = new cv.Point(rect.x, rect.y);
-            let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
-            cv.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
-  
-            // Tesseract OCR 처리
-            let plateRegion = src.roi(rect);
-            let tempCanvas = document.createElement('canvas');
-            cv.imshow(tempCanvas, plateRegion);
-            
-            // OCR 처리
-            Tesseract.recognize(
-              tempCanvas,
-              'kor',
-              { logger: m => console.log('OCR Progress:', m) }
-            ).then(({ data: { text } }) => {
-              const cleanText = text.replace(/[^0-9가-힣]/g, '');
-              console.log('Detected text:', cleanText);
-              setDetectedPlate(cleanText);
+            if (aspectRatio > 2 && aspectRatio < 3) {
+              alert('번호판 영역 감지!');
               
-              if (cleanText.includes(expectedPlateNumber)) {
-                console.log('Matching plate found!');
-                stopCamera();
-                navigate('/driveing');
-              }
-            });
-  
-            plateRegion.delete();
+              let point1 = new cv.Point(rect.x, rect.y);
+              let point2 = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+              cv.rectangle(src, point1, point2, [0, 255, 0, 255], 2);
+
+              let plateRegion = src.roi(rect);
+              let tempCanvas = document.createElement('canvas');
+              cv.imshow(tempCanvas, plateRegion);
+              
+              Tesseract.recognize(
+                tempCanvas,
+                'kor',
+                { logger: m => console.log('OCR Progress:', m) }
+              ).then(({ data: { text } }) => {
+                const cleanText = text.replace(/[^0-9가-힣]/g, '');
+                alert('인식된 번호판: ' + cleanText);
+                setDetectedPlate(cleanText);
+                
+                if (cleanText.includes(expectedPlateNumber)) {
+                  alert('일치하는 번호판 발견!');
+                  stopCamera();
+                  navigate('/driveing');
+                }
+              });
+
+              plateRegion.delete();
+            }
           }
+          cnt.delete();
         }
-        cnt.delete();
+
+        cv.imshow(canvas, src);
+
+        // 메모리 해제
+        src.delete();
+        gray.delete();
+        blurred.delete();
+        edges.delete();
+        contours.delete();
+        hierarchy.delete();
+
+        requestAnimationFrame(processVideo);
+      } catch (err) {
+        alert('이미지 처리 오류: ' + err.message);
       }
-  
-      // 결과 표시
-      cv.imshow(canvas, src);
-  
-      // 메모리 해제
-      src.delete();
-      gray.delete();
-      blurred.delete();
-      edges.delete();
-      contours.delete();
-      hierarchy.delete();
-  
-    } catch (err) {
-      console.error('Image processing error:', err);
-    }
-  
-    // 다음 프레임 처리
-    if (!isProcessing) {
+    } else {
+      alert('카메라 준비 상태 확인: ' + 
+        'hasCamera=' + hasCamera + 
+        ', isLoaded=' + isLoaded + 
+        ', hasVideo=' + !!videoRef.current + 
+        ', hasCanvas=' + !!canvasRef.current
+      );
       requestAnimationFrame(processVideo);
     }
   };
