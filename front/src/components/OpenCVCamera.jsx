@@ -85,32 +85,26 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         const video = videoRef.current;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        alert('1');
         // 캔버스 크기를 비디오 크기에 맞춤
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         
         // 비디오 프레임을 캔버스에 그리기
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        alert('2');
         // Mat 객체 생성
         let src = cvObject.imread(canvasRef.current);
         let gray = new cvObject.Mat();
         cvObject.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-        alert('3');
         // 이미지 전처리
         let blurred = new cvObject.Mat();
         cvObject.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-        alert('4');
         // 엣지 검출
         let edges = new cvObject.Mat();
         cvObject.Canny(blurred, edges, 100, 200);
-        alert('5');
         // 윤곽선 검출
         let contours = new cvObject.MatVector();
         let hierarchy = new cvObject.Mat();
         cvObject.findContours(edges, contours, hierarchy, cvObject.RETR_LIST, cvObject.CHAIN_APPROX_SIMPLE);
-        alert('6');
         // 번호판 후보 영역 검출  
         try {
           for (let i = 0; i < contours.size(); ++i) {
