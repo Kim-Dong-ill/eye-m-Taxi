@@ -4,6 +4,16 @@ entrypoint: gunicorn -b :$PORT plate_detection_server:app
 
 instance_class: F1
 
+runtime_config:
+  python_version: "3.9"
+
+# Tesseract 설치를 위한 스크립트
+lifecycle:
+  before_start:
+    - apt-get update
+    - apt-get install -y tesseract-ocr
+    - apt-get install -y tesseract-ocr-kor
+
 automatic_scaling:
   target_cpu_utilization: 0.65
   min_instances: 1
@@ -14,7 +24,7 @@ env_variables:
   FLASK_ENV: "production"
   FLASK_APP: "plate_detection_server.py"
   ALLOWED_ORIGINS: "https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com"
-  TESSERACT_PATH: "/usr/local/bin/tesseract"
+  TESSERACT_PATH: "/usr/bin/tesseract"  # 경로 수정됨
 
 handlers:
   - url: /.*
