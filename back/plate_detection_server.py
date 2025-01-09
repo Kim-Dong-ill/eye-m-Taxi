@@ -9,8 +9,16 @@ import io
 import base64
 import os
 import logging
+from google.cloud import logging as cloud_logging
 
 app = Flask(__name__)
+# Cloud Logging 설정
+client = cloud_logging.Client()
+client.setup_logging()
+
+# 로거 생성
+logger = logging.getLogger('plate_detection')
+logger.setLevel(logging.INFO)
 
 # 현재 파일의 디렉토리 경로를 기준으로 debug 폴더 경로 설정
 current_dir = os.path.dirname(os.path.abspath(__file__))
