@@ -10,6 +10,8 @@ import base64
 import os
 import logging
 
+app = Flask(__name__)
+
 # 현재 파일의 디렉토리 경로를 기준으로 debug 폴더 경로 설정
 current_dir = os.path.dirname(os.path.abspath(__file__))
 debug_dir = os.path.join(current_dir, 'debug')
