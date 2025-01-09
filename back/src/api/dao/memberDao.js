@@ -4,8 +4,8 @@ import bcrypt from "bcrypt";
 // 회원가입
 const memberRegister = async (data) => {
   const query = `
-    INSERT INTO ${schema}.member (member_id, member_password, member_phone)
-    VALUES ($1, $2, $3)
+    INSERT INTO ${schema}.member (member_id, member_password, member_phone, created_at, updated_at)
+    VALUES ($1, $2, $3, NOW(), NOW())
 `;
   try {
     const result = await db.query(query, [
