@@ -140,26 +140,30 @@ def enhance_plate(plate):
 @app.route('/detect_plate', methods=['POST'])
 def process_image():
     try:
-        logging.info("번호판 인식 요청 받음")
-        print("Request received")
+        logging.info("1번호판 인식 요청 받음")
 
         # 이미지 데이터 받기
         image_data = request.json['image']
         nparr = np.frombuffer(base64.b64decode(image_data.split(',')[1]), np.uint8)
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        
+        logging.info("2번 이미지 디코딩 완료"+image)
+
         # 번호판 영역 검출
         plate_candidates = detect_plate_area(image)
-        
+        logging.info("3번 번호판 영역 검출 완료"+plate_candidates)
+
         best_result = None
         highest_confidence = 0
         best_box = None  # 최적의 박스 좌표 저장용
-        
+        logging.info("4번 최적의 박스 좌표 저장용"+best_box)
+
         for box, area, angle in plate_candidates[:3]:
+            logging.info("5번 번호판 영역 추출 및 보정"+box)
             # 번호판 영역 추출 및 보정
             plate = preprocess_plate(image, box, angle)
             enhanced_plate = enhance_plate(plate)
-            
+            logging.info("6번 번호판 영역 보정 완료"+enhanced_plate)
+
             # OCR 수행
             plate_text = pytesseract.image_to_string(
                 enhanced_plate,
@@ -171,7 +175,8 @@ def process_image():
             import re
             plate_pattern = re.compile(r'\d{2,3}[가-힣]\d{4}')
             matches = plate_pattern.findall(plate_text)
-            
+            logging.info("7번 정규식으로 번호판 형식 검증"+matches)
+
             if matches:
                 confidence = pytesseract.image_to_data(
                     enhanced_plate,
@@ -179,7 +184,8 @@ def process_image():
                     config='--psm 7 --oem 3',
                     output_type=pytesseract.Output.DICT
                 )
-                
+                logging.info("8번 테서렉트 영역 검증"+confidence)
+
                 conf_values = [int(x) for x in confidence['conf'] if x != '-1']
                 if conf_values:
                     avg_confidence = sum(conf_values) / len(conf_values)
@@ -189,6 +195,7 @@ def process_image():
                         best_box = box  # 최적의 박스 좌표 저장
 
         if best_result:
+            logging.info("9번 최적의 박스 좌표 저장"+best_result)
             # 9. Draw Rectangle on Original Image
             debug_result = image.copy()
             cv2.drawContours(debug_result, [best_box], 0, (0, 255, 0), 2)
@@ -205,6 +212,8 @@ def process_image():
              # 디버그 이미지를 Base64로 변환
             _, buffer = cv2.imencode('.jpg', debug_result)
             debug_image_base64 = base64.b64encode(buffer).decode('utf-8')
+            logging.info("10번 디버그 이미지를 Base64로 변환"+debug_image_base64)
+            logging.info("11번 번호판 번호 및 신뢰도 반환"+best_result)
 
             return jsonify({
                 'success': True,
@@ -214,6 +223,7 @@ def process_image():
                 'debug_image': debug_image_base64
             })
         else:
+            logging.info("11번 번호판을 찾을 수 없습니다."+best_result)
             return jsonify({
                 'success': False,
                 'error': '번호판을 찾을 수 없습니다.'
