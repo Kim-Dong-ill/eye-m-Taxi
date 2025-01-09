@@ -11,6 +11,7 @@ import os
 import logging
 from google.cloud import logging as cloud_logging
 
+
 app = Flask(__name__)
 # Cloud Logging 설정
 client = cloud_logging.Client()
@@ -165,23 +166,22 @@ def process_image():
                 'success': False,
                 'error': '이미지 디코딩 실패'
             })
-        logging.info("2번 이미지 디코딩 완료"+image)
+        logging.info("2번 이미지 디코딩 완료")
 
         # 번호판 영역 검출
         plate_candidates = detect_plate_area(image)
-        logging.info("3번 번호판 영역 검출 완료"+plate_candidates)
+        logging.info(f"3. 번호판 영역 검출 완료 - 후보 수: {len(plate_candidates)}")
 
         best_result = None
         highest_confidence = 0
         best_box = None  # 최적의 박스 좌표 저장용
-        logging.info("4번 최적의 박스 좌표 저장용"+best_box)
 
         for box, area, angle in plate_candidates[:3]:
-            logging.info("5번 번호판 영역 추출 및 보정"+box)
+            logging.info("5번 번호판 영역 추출 및 보정")
             # 번호판 영역 추출 및 보정
             plate = preprocess_plate(image, box, angle)
             enhanced_plate = enhance_plate(plate)
-            logging.info("6번 번호판 영역 보정 완료"+enhanced_plate)
+            logging.info("6번 번호판 영역 보정 완료")
 
             # OCR 수행
             plate_text = pytesseract.image_to_string(
