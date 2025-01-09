@@ -11,6 +11,15 @@ import os
 import logging
 from google.cloud import logging as cloud_logging
 
+# 현재 파일의 디렉토리 경로를 기준으로 debug 폴더 경로 설정
+current_dir = os.path.dirname(os.path.abspath(__file__))
+debug_dir = os.path.join(current_dir, 'debug')
+
+# 디버그 폴더 생성
+debug_dir = 'debug'
+if not os.path.exists(debug_dir):
+    os.makedirs(debug_dir)
+
 # 환경에 따른 .env 파일 로드
 if os.getenv('FLASK_ENV') == 'production':
     load_dotenv('.env.production')
@@ -38,36 +47,46 @@ CORS(app, resources={
 pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_PATH')
 
 def detect_plate_area(image):
-    # 번호판 영역 검출을 위한 전처리
+    # 1. Convert Image to Grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite('debug/1_grayscale.jpg', gray)
+
+    # 2. Gaussian Blur
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    
-    # Adaptive Thresholding
+    cv2.imwrite(os.path.join(debug_dir, '2_blur.jpg'), blur)
+    # 3. Adaptive Thresholding
     thresh = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
                                  cv2.THRESH_BINARY_INV, 19, 9)
     
-    # 윤곽선 검출
+    # 4. Find Contours
     contours, _ = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     
-    # 번호판 후보 영역 찾기
+    # 5. Select Candidates by Size and Aspect Ratio
     plate_candidates = []
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if area > 1000:  # 작은 노이즈 제거
+        if area > 1000:  # 최소 크기 제한
             rect = cv2.minAreaRect(cnt)
             (x, y), (w, h), angle = rect
             aspect_ratio = max(w, h) / min(w, h)
             
-            # 한국 번호판의 일반적인 종횡비 (2.3:1 ~ 4.7:1)
+            # 번호판 비율 검사 (2.3:1 ~ 4.7:1)
             if 2.3 <= aspect_ratio <= 4.7:
                 box = cv2.boxPoints(rect)
                 box = np.int0(box)
+                
+                # 디버깅: 후보 영역 표시
+                debug_image = image.copy()
+                cv2.drawContours(debug_image, [box], 0, (0, 255, 0), 2)
+                cv2.imwrite(f'debug_candidate_{len(plate_candidates)}.jpg', debug_image)
+                
                 plate_candidates.append((box, area, angle))
     
+    # 면적 기준 정렬
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
 def preprocess_plate(image, box, angle):
-    # 번호판 영역 추출 및 보정
+    # 6. Rotate Plate Images
     width = int(max(np.linalg.norm(box[0] - box[1]),
                    np.linalg.norm(box[2] - box[3])))
     height = int(max(np.linalg.norm(box[0] - box[3]),
@@ -75,15 +94,13 @@ def preprocess_plate(image, box, angle):
     
     src_pts = box.astype("float32")
     dst_pts = np.array([[0, height-1],
-                        [0, 0],
-                        [width-1, 0],
-                        [width-1, height-1]], dtype="float32")
+                       [0, 0],
+                       [width-1, 0],
+                       [width-1, height-1]], dtype="float32")
     
-    # 투시 변환
     matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
     plate = cv2.warpPerspective(image, matrix, (width, height))
     
-    # 각도 보정
     if angle < -45:
         angle = 90 + angle
     if abs(angle) > 0:
@@ -95,18 +112,17 @@ def preprocess_plate(image, box, angle):
     return plate
 
 def enhance_plate(plate):
-    # 번호판 이미지 개선
+    # 7. Additional Image Processing
     gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
-    
-    # 히스토그램 평활화
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     enhanced = clahe.apply(gray)
-    
-    # 노이즈 제거
     denoised = cv2.fastNlMeansDenoising(enhanced)
     
-    # 이진화
+    # 8. Final Thresholding
     _, binary = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    
+    # 디버깅: 전처리된 이미지 저장
+    cv2.imwrite('debug_enhanced.jpg', binary)
     
     return binary
 
@@ -162,19 +178,24 @@ def process_image():
                         best_box = box  # 최적의 박스 좌표 저장
 
         if best_result:
-            # 이미지 크기 가져오기
-            height, width = image.shape[:2]
+            # 9. Draw Rectangle on Original Image
+            debug_result = image.copy()
+            cv2.drawContours(debug_result, [best_box], 0, (0, 255, 0), 2)
+            cv2.putText(debug_result, best_result, tuple(best_box[0]), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.imwrite('debug_final_result.jpg', debug_result)
             
-            # 박스 좌표를 상대적 비율로 변환 (0~1 사이)
+            # 10. Convert to Relative Coordinates
+            height, width = image.shape[:2]
             relative_box = best_box.astype(float)
-            relative_box[:, 0] = relative_box[:, 0] / width  # x 좌표
-            relative_box[:, 1] = relative_box[:, 1] / height # y 좌표
+            relative_box[:, 0] = relative_box[:, 0] / width
+            relative_box[:, 1] = relative_box[:, 1] / height
             
             return jsonify({
                 'success': True,
                 'plate_number': best_result,
                 'confidence': highest_confidence / 100,
-                'plate_box': relative_box.tolist()  # 박스 좌표 추가
+                'plate_box': relative_box.tolist()
             })
         else:
             return jsonify({
