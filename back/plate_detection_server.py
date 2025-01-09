@@ -142,10 +142,29 @@ def process_image():
     try:
         logging.info("1번호판 인식 요청 받음")
 
-        # 이미지 데이터 받기
-        image_data = request.json['image']
-        nparr = np.frombuffer(base64.b64decode(image_data.split(',')[1]), np.uint8)
-        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+         # base64 디코딩 부분 수정
+        try:
+            # 'data:image/jpeg;base64,' 부분 제거
+            image_data = request.json['image']
+            image_data = image_data.split(',')[1]
+            logger.info("1.5번 이미지 디코딩 완료"+image_data)
+            # base64 디코딩
+            nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
+            # 이미지 디코드
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+            if image is None:
+                raise ValueError("이미지 디코딩 실패")
+                
+            logger.info("이미지 디코딩 성공")
+            logger.info(f"이미지 크기: {image.shape}")  # 이미지 정보 로깅
+            
+        except Exception as e:
+            logger.error(f"이미지 디코딩 오류: {str(e)}")
+            return jsonify({
+                'success': False,
+                'error': '이미지 디코딩 실패'
+            })
         logging.info("2번 이미지 디코딩 완료"+image)
 
         # 번호판 영역 검출
