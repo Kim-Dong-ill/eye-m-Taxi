@@ -56,12 +56,22 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
       context.drawImage(videoRef.current, 0, 0);
       
       const imageData = canvas.toDataURL('image/jpeg', 0.8);
-      const response = await axios.post('http://localhost:5000/detect_plate', {
+      console.log('Sending request to:', import.meta.env.VITE_NODE_SERVER_URL);
+      
+      const response = await axios.post(`${import.meta.env.VITE_NODE_SERVER_URL}/detect_plate`, {
         image: imageData
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000 // 30초 타임아웃 설정
       });
+      
+      console.log('Server response:', response.data); // 응답 로깅
       
       if (response.data.success) {
         const { plate_number, confidence: plateConfidence } = response.data;
+        console.log('Detected plate:', plate_number, 'confidence:', plateConfidence);
         setDetectedPlate(plate_number);
         setConfidence(plateConfidence);
         
@@ -83,7 +93,8 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
       }
       
     } catch (error) {
-      console.error('Processing error:', error);
+      console.error('Processing error:', error.response?.data || error.message);
+      console.error('Full error:', error);
     } finally {
       setIsProcessing(false);
       requestAnimationFrame(processVideo);
