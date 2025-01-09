@@ -8,6 +8,8 @@ from PIL import Image
 import io
 import base64
 import os
+import logging
+from google.cloud import logging as cloud_logging
 
 # 환경에 따른 .env 파일 로드
 if os.getenv('FLASK_ENV') == 'production':
@@ -111,6 +113,7 @@ def enhance_plate(plate):
 @app.route('/detect_plate', methods=['POST'])
 def process_image():
     try:
+        logging.info("번호판 인식 요청 받음")
         print("Request received") # 요청 수신 확인
 
         # 이미지 데이터 받기
