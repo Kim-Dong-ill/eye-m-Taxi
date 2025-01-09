@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import cv2
@@ -6,18 +7,33 @@ import pytesseract
 from PIL import Image
 import io
 import base64
+import os
+
+# 환경에 따른 .env 파일 로드
+if os.getenv('FLASK_ENV') == 'production':
+    load_dotenv('.env.production')
+else:
+    load_dotenv()
 
 app = Flask(__name__)
+# 환경 변수에서 허용된 도메인 가져오기
+ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS').split(',')
+
+if os.getenv('ADDITIONAL_ORIGINS'):
+    ALLOWED_ORIGINS.extend(os.getenv('ADDITIONAL_ORIGINS').split(','))
+
 CORS(app, resources={
     r"/detect_plate": {
-        "origins": ["http://localhost:5173"],
+        "origins": ALLOWED_ORIGINS,
         "methods": ["POST"],
-        "allow_headers": ["Content-Type"]
+        "allow_headers": ["Content-Type"],
+        "expose_headers": ["Content-Type"],
+        "supports_credentials": True,
+        "max_age": 600
     }
 })
-
 # Tesseract 경로 설정
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_PATH')
 
 def detect_plate_area(image):
     # 번호판 영역 검출을 위한 전처리
@@ -164,4 +180,4 @@ def process_image():
 
 if __name__ == '__main__':
     print("Starting plate detection server...")
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)  # host를 0.0.0.0으로 설정
