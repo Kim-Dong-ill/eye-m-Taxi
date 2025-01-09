@@ -90,11 +90,13 @@ jobs:
           VITE_KAKAO_APP_KEY: ${{ secrets.VITE_KAKAO_APP_KEY }}
           VITE_NODE_SERVER_URL: ${{ secrets.VITE_NODE_SERVER_URL }}
           VITE_MAPBOX_ACCESS_TOKEN: ${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}
+          VITE_PYTHON_SERVER_URL: ${{ secrets.VITE_PYTHON_SERVER_URL }}
         run: |
           cd front
           echo "VITE_NODE_SERVER_URL=${{ secrets.VITE_NODE_SERVER_URL }}" > .env.production
-          echo "VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" >> .env.production  # 추가
-          echo "VITE_KAKAO_APP_KEY=${{ secrets.VITE_KAKAO_APP_KEY }}" >> .env.production  # 추가
+          echo "VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" >> .env.production
+          echo "VITE_KAKAO_APP_KEY=${{ secrets.VITE_KAKAO_APP_KEY }}" >> .env.production
+          echo "VITE_PYTHON_SERVER_URL=${{ secrets.VITE_PYTHON_SERVER_URL }}" >> .env.production
           npm install
           npm run build
 
