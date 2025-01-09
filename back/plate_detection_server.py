@@ -9,7 +9,6 @@ import io
 import base64
 import os
 import logging
-from google.cloud import logging as cloud_logging
 
 # 현재 파일의 디렉토리 경로를 기준으로 debug 폴더 경로 설정
 current_dir = os.path.dirname(os.path.abspath(__file__))
