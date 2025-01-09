@@ -5,7 +5,7 @@ on:
     branches: [ main-backup ]
 
 jobs:
-deploy-python-backend:
+  deploy-python-backend:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
