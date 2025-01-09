@@ -16,7 +16,7 @@ import Layout from "./components/Layout.jsx";
 import ProtectedRoute from "./components/contain/ProtectedRoute.jsx";
 import "./css/app.scss";
 
-import PublicRoute from "./components/layout/PublicRoute";
+import PublicRoute from "./components/contain/PublicRoute.jsx";
 import KakaoRedirectHandler from './page/KakaoRedirectHandler';
 
 
