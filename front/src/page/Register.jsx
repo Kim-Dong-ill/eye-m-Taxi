@@ -6,6 +6,7 @@ import "../css/register.scss";
 import user from "/icon/Person.svg";
 import lock from "/icon/Lock.svg";
 import phone from "/icon/Phone.svg";
+import axios from "axios"
 
 function Register() {
 
@@ -125,30 +126,6 @@ function Register() {
       }
     };
 
-    // const handlePasswordBlur = () => {
-    //   if (password) {
-    //     if (!validatePassword(password)) {
-    //       setPasswordError(true);
-    //       setPasswordErrorMessage("영문, 숫자, 특수문자를 모두 포함해야 합니다.");
-    //     } else if (confirmPassword && password !== confirmPassword) {
-    //       setPasswordError(true);
-    //       setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
-    //     }
-    //   }
-    // };
-
-    // const handleConfirmPasswordBlur = () => {
-    //   if (confirmPassword) {
-    //     if (!validatePassword(password)) {
-    //       setPasswordError(true);
-    //       setPasswordErrorMessage("영문, 숫자, 특수문자를 모두 포함해야 합니다.");
-    //     } else if (password !== confirmPassword) {
-    //       setPasswordError(true);
-    //       setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
-    //     }
-    //   }
-    // };
-
   // 전화번호 유효성 검사
   const handlePhoneInput = (e) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
@@ -162,7 +139,7 @@ function Register() {
   
     if (value.length !== 11) {
       setPhoneNumberError(true);
-      setPhoneNumberErrorMessage("전화번호를 다시 입력해주세요.");
+      setPhoneNumberErrorMessage("전화번호는 11자리를 입력해주세요.");
     } else {
       setPhoneNumberError(false);
       setPhoneNumberErrorMessage("");
@@ -200,21 +177,18 @@ const isFormValid = () => {
   // 3. 비밀번호 유효성 검사
   if (!validatePassword(password)) {
     console.log('비밀번호 형식 오류');
-    // setFormError("비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.");
     return false;
   }
 
   // 4. 비밀번호 일치 검사
   if (password !== confirmPassword) {
     console.log('비밀번호 불일치');
-    // setFormError("비밀번호가 일치하지 않습니다.");
     return false;
   }
 
   // 5. 전화번호 길이 검사
   if (phoneNumber.length !== 11) {
     console.log('전화번호 길이 오류');
-    // setFormError("전화번호를 다시 입력해주세요.");
     return false;
   }
 
@@ -223,24 +197,38 @@ const isFormValid = () => {
   return true;
 };
 
-const handleRegister = () => {
-  console.log('Register button clicked');
+const handleRegister = async () => {
   const isValid = isFormValid();
-  console.log('Form validation result:', isValid);
-  
+
   if (isValid) {
-    // setFormError("");
-    console.log('회원가입 성공 - 로그인 페이지로 이동 시도');
+    console.log("userId:", userId); // 로그 추가
+    console.log("password:", password); // 로그 추가
+    console.log("phoneNumber:", phoneNumber); // 로그 추가
+
     try {
-      navigate('/login', { replace: true });
-      console.log('navigate 실행 완료');
+      const response = await axios.post('http://localhost:3000/member/register', {
+        userId,
+        password,
+        phoneNumber
+      });
+
+      console.log('Response:', response); // 응답 로그
+      if (response.data.success) {
+        // 회원가입 성공 시 로그인 페이지로 이동
+        navigate('/login', { replace: true });
+      } else {
+        setFormError(response.data.message || "회원가입에 실패했습니다. 다시 시도해주세요.");
+      }
     } catch (error) {
-      console.error('Navigation error:', error);
+      console.error('회원가입 API 요청 실패:', error);
+      setFormError("서버에 문제가 발생했습니다. 다시 시도해주세요.");
     }
   } else {
-    console.log('유효성 검사 실패:', formError);
+    console.log('유효성 검사 실패');
   }
 };
+
+
 
   const data = [
     {
@@ -283,11 +271,11 @@ const handleRegister = () => {
     onClick: handleRegister
     };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(userId);
-    console.log(password);
-  }
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log(userId);
+  //   console.log(password);
+  // }
 
   return (
     <div className="register">
