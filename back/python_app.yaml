@@ -4,13 +4,17 @@ env: flex
 
 resources:
   cpu: 1
-  memory_gb: 0.5
+  memory_gb: 1  # 메모리 증가 (OpenCV와 Tesseract 사용)
   disk_size_gb: 10
 
 automatic_scaling:
   target_cpu_utilization: 0.65
   min_instances: 1
   max_instances: 10
+  cool_down_period_sec: 180  # 스케일링 안정화 시간
+
+readiness_check:
+  app_start_timeout_sec: 300  # 앱 시작 대기 시간
 
 env_variables:
   PYTHONUNBUFFERED: "true"
