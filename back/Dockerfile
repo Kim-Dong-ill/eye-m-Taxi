@@ -4,8 +4,8 @@ FROM python:3.9-slim
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     tesseract-ocr-kor \
-    libgl1-mesa-glx \  # OpenCV 의존성
-    libglib2.0-0 \     # OpenCV 의존성
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # 작업 디렉토리 설정
