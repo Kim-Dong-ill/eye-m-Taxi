@@ -56,7 +56,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
       context.drawImage(videoRef.current, 0, 0);
       
       const imageData = canvas.toDataURL('image/jpeg', 0.8);
-      
+       
       const response = await axios.post(`${import.meta.env.VITE_PYTHON_SERVER_URL}/detect_plate`, {
         image: imageData
       }, {
