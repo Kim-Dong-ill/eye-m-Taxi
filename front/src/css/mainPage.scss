@@ -11,10 +11,11 @@
         justify-content: center;
         align-items: center;
         gap: 20px;
+        width: 100%;
         .mainPageItem{
             border: 2.5px solid var(--bg-yellow);
             border-radius: 10px;
-            width: 327px;
+            width: 70%;
             height: 200px;
             display: flex;
             justify-content: center;

@@ -292,7 +292,7 @@ const handleRegister = () => {
   return (
     <div className="register">
       <div className="registerContainer">
-        <div>
+        <div className="registerInputBox">
           <InputBox data={data} />
           {userIdError && (
             <p className="error-message">{userIdErrorMessage}</p>

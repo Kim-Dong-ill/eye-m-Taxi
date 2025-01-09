@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import Header from "../components/layout/Header";
+
 import InputBox from "../components/InputBox";
 import "../css/login.scss";
 import user from "../../public/icon/Person.svg";
@@ -116,7 +118,7 @@ function Login() {
       <div className="loginContainer">
         <Header />
         <form onSubmit={handleLogin}>
-          <div>
+          <div  className="loginInputBox">
             <InputBox data={data} handleChange={handleChange} />
           </div>
           <button className="loginSubmitBtn" type="submit">로그인</button>

@@ -7,5 +7,26 @@
     gap: 10px;
     img{
         cursor: pointer;
+        transition: all 0.3s ease; // 부드러운 애니메이션 효과
+
+    }
+    // recording 클래스를 가진 img 요소에 대한 스타일
+    img.recording {
+        animation: pulse 1.3s infinite;
+        filter: hue-rotate(300deg);
+        
+    }
+}
+
+// 애니메이션 키프레임 정의
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.07);
+    }
+    100% {
+        transform: scale(1);
     }
 }

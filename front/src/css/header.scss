@@ -1,18 +1,29 @@
 .header{
-    border: 1px solid #000;
     padding: 0 20px;
     background-color: var(--bg-background);
     .headerContainer{
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border: 1px solid #000;
         .headerLeft,
         .headerCenter{
             cursor: pointer;
         }
         .headerRight{
          opacity: 0;
+        }
+
+        // 400px 이하일 때의 스타일
+        @media screen and (max-width: 400px) {
+            .headerLeft img,
+            .headerRight img {
+                width: 36px; // 이미지 크기를 24px로 조절
+                height: auto; // 비율 유지
+            }
+            .headerCenter img{
+                width: 150px;
+                height: auto;
+            }
         }
     }
 }

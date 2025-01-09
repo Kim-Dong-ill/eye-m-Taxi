@@ -1,18 +1,23 @@
 import React from 'react'
-import Map from '../components/Map'
 import Button from '../components/button'
 import '../css/callPreview.scss'
+import { useLocation } from 'react-router-dom';
+import CallPreviewMap from '../components/CallPreviewMap';
 
 function CallPreview() {
-
-  const height = 600;
+  const location = useLocation();
+  const { pickup, dropoff } = location.state || {};
+  console.log("승차 좌표",pickup.coordinates);//승차 좌표 
+  console.log("하차 좌표",dropoff.coordinates);//하차 좌표
+  
+  const height = 550;
   const btnData ={
     text : "호출하기",
     link : "/calling" 
   }
   return (
     <div className='callPreview'>
-      <Map height={height}/>
+      <CallPreviewMap height={height} />
       <Button btnData={btnData}/>
     </div>
   )

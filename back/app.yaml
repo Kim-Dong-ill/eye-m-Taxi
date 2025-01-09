@@ -1,0 +1,32 @@
+service: eyemtaxi-back
+
+runtime: nodejs20
+
+env: standard
+
+instance_class: F1
+
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 1
+  max_instances: 10
+
+env_variables:
+  NODE_ENV: "production"
+  DB_USER: "codelab"
+  DB_PASSWORD: "codelab1234"
+  DB_NAME: "postgres"
+  DB_SCHEMA: "eyemtaxi"
+  JWT_SECRET: "eyemtaxi"
+  CORS_ORIGIN: "https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com"
+
+beta_settings:
+  cloud_sql_instances: winged-woods-442503-f1:asia-northeast3:codelab
+
+handlers:
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    script: auto
+
+entrypoint: node src/server.js

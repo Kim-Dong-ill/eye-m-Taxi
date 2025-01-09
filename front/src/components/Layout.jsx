@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import '../../css/layout.scss'
-import Header from './Header'
+import '../css/layout.scss'
+import Header from './contain/Header.jsx'
 
 function layout() {
 

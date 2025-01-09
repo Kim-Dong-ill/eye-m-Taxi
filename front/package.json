@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "HOST=0.0.0.0 react-scripts start",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -24,7 +25,8 @@
     "react-router-dom": "^7.1.1",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "sass": "^1.83.0"
+    "sass": "^1.83.0",
+    "tesseract.js": "^6.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

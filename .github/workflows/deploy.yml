@@ -1,0 +1,83 @@
+name: Deploy to Google Cloud
+
+on:
+  push:
+    branches: [ main-backup ]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '>= 363.0.0'
+
+      - name: Clean up old versions
+        run: |
+          gcloud app versions list --format="value(version.id)" | 
+          grep -v $(gcloud app versions list --sort-by=~last_deployed_time --limit=1 --format="value(version.id)") | 
+          xargs -r gcloud app versions delete --quiet
+        continue-on-error: true
+
+      - name: Deploy Backend
+        run: |
+          cd back
+          gcloud app deploy app.yaml --project=${{ secrets.GCP_PROJECT_ID }}
+
+  deploy-frontend:
+    needs: deploy-backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Build Frontend
+        env:
+          VITE_KAKAO_APP_KEY: ${{ secrets.VITE_KAKAO_APP_KEY }}
+          VITE_NODE_SERVER_URL: ${{ secrets.VITE_NODE_SERVER_URL }}
+          VITE_MAPBOX_ACCESS_TOKEN: ${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}
+        run: |
+          cd front
+          echo "VITE_NODE_SERVER_URL=${{ secrets.VITE_NODE_SERVER_URL }}" > .env.production
+          echo "VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" >> .env.production  # 추가
+          echo "VITE_KAKAO_APP_KEY=${{ secrets.VITE_KAKAO_APP_KEY }}" >> .env.production  # 추가
+          npm install
+          npm run build
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '>= 363.0.0'
+  
+      - name: Clean up old versions
+        run: |
+          gcloud app versions list --format="value(version.id)" | 
+          grep -v $(gcloud app versions list --sort-by=~last_deployed_time --limit=1 --format="value(version.id)") | 
+          xargs -r gcloud app versions delete --quiet
+        continue-on-error: true
+
+      - name: Deploy Frontend
+        run: |
+          cd front
+          gcloud app deploy app.yaml --project=${{ secrets.GCP_PROJECT_ID }}

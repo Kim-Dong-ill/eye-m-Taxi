@@ -12,11 +12,13 @@ import StarScope from "./page/StarScope";
 import VoiceRecord from "./page/VoiceRecord";
 import VoiceRecordList from "./page/VoiceRecordList";
 import DriveFinish from "./page/DriveFinish";
-import Layout from "./components/layout/Layout";
-import ProtectedRoute from "./components/layout/ProtectedRoute";
+import Layout from "./components/Layout.jsx";
+import ProtectedRoute from "./components/contain/ProtectedRoute.jsx";
 import "./css/app.scss";
+
 import PublicRoute from "./components/layout/PublicRoute";
 import KakaoRedirectHandler from './page/KakaoRedirectHandler';
+
 
 
 function App() {
@@ -32,7 +34,6 @@ function App() {
         </Route>
 
         <Route element={<Layout />}>
-          {/* <Route path="/register" element={<Register />} /> */}
           <Route element={<ProtectedRoute />}>
             <Route index element={<MainPage />} />
             <Route path="/callAccept" element={<CallAccept />} />
