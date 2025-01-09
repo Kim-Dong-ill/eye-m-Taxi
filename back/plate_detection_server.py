@@ -8,7 +8,13 @@ import io
 import base64
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={
+    r"/detect_plate": {
+        "origins": ["http://localhost:5173"],
+        "methods": ["POST"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Tesseract 경로 설정
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -89,6 +95,8 @@ def enhance_plate(plate):
 @app.route('/detect_plate', methods=['POST'])
 def process_image():
     try:
+        print("Request received") # 요청 수신 확인
+
         # 이미지 데이터 받기
         image_data = request.json['image']
         nparr = np.frombuffer(base64.b64decode(image_data.split(',')[1]), np.uint8)
