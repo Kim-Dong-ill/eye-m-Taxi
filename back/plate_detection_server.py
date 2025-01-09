@@ -114,7 +114,7 @@ def enhance_plate(plate):
 def process_image():
     try:
         logging.info("번호판 인식 요청 받음")
-        print("Request received") # 요청 수신 확인
+        print("Request received")
 
         # 이미지 데이터 받기
         image_data = request.json['image']
@@ -126,12 +126,11 @@ def process_image():
         
         best_result = None
         highest_confidence = 0
+        best_box = None  # 최적의 박스 좌표 저장용
         
-        for box, area, angle in plate_candidates[:3]:  # 상위 3개 후보만 처리
+        for box, area, angle in plate_candidates[:3]:
             # 번호판 영역 추출 및 보정
             plate = preprocess_plate(image, box, angle)
-            
-            # 이미지 개선
             enhanced_plate = enhance_plate(plate)
             
             # OCR 수행
@@ -154,19 +153,28 @@ def process_image():
                     output_type=pytesseract.Output.DICT
                 )
                 
-                # 평균 신뢰도 계산
                 conf_values = [int(x) for x in confidence['conf'] if x != '-1']
                 if conf_values:
                     avg_confidence = sum(conf_values) / len(conf_values)
                     if avg_confidence > highest_confidence:
                         highest_confidence = avg_confidence
                         best_result = matches[0]
-        
+                        best_box = box  # 최적의 박스 좌표 저장
+
         if best_result:
+            # 이미지 크기 가져오기
+            height, width = image.shape[:2]
+            
+            # 박스 좌표를 상대적 비율로 변환 (0~1 사이)
+            relative_box = best_box.astype(float)
+            relative_box[:, 0] = relative_box[:, 0] / width  # x 좌표
+            relative_box[:, 1] = relative_box[:, 1] / height # y 좌표
+            
             return jsonify({
                 'success': True,
                 'plate_number': best_result,
-                'confidence': highest_confidence / 100
+                'confidence': highest_confidence / 100,
+                'plate_box': relative_box.tolist()  # 박스 좌표 추가
             })
         else:
             return jsonify({
