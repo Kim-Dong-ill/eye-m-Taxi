@@ -4,8 +4,8 @@ import bcrypt from "bcrypt";
 // 회원가입
 const memberRegister = async (data) => {
   const query = `
-    INSERT INTO ${schema}.member (member_id, member_password, member_phone)
-    VALUES ($1, $2, $3)
+    INSERT INTO ${schema}.member (member_id, member_password, member_phone, created_at, updated_at)
+    VALUES ($1, $2, $3, NOW(), NOW())
 `;
   try {
     const result = await db.query(query, [
@@ -57,7 +57,48 @@ const memberLogin = async (data) => {
   }
 };
 
+// 카카오 ID로 사용자 검색
+const findUserByKakaoId = async (kakaoId) => {
+  const query = `
+    SELECT member_id, kakao_id
+    FROM ${schema}.member
+    WHERE kakao_id = $1
+  `;
+  try {
+    const result = await db.query(query, [kakaoId]);
+    return result.rows[0] || null; // 사용자 정보 반환 (없으면 undefined)
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+// 카카오 사용자 등록
+const registerKakaoUser = async (data) => {
+
+  const query = `
+    INSERT INTO ${schema}.member (kakao_id, created_at, updated_at)
+    VALUES ($1, NOW(), NOW())
+    RETURNING member_id
+  `;
+  try {
+    const result = await db.query(query, [data.kakao_id]);
+
+    if (!result.rows[0]) {
+      throw new Error("사용자 등록 실패: 반환된 데이터가 없습니다.");
+    }
+      
+    return { member_id: result.rows[0].member_id, kakao_id: data.kakao_id }; 
+  } catch (error) {
+    console.log("카카오 로그인 오류", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 export default {
   memberRegister,
   memberLogin,
+  findUserByKakaoId, // 추가
+  registerKakaoUser, // 추가
+  
 };
