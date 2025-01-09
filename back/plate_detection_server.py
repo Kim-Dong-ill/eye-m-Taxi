@@ -19,19 +19,21 @@ debug_dir = 'debug'
 if not os.path.exists(debug_dir):
     os.makedirs(debug_dir)
 
-# 환경에 따른 .env 파일 로드
+# CORS 설정 수정
+ALLOWED_ORIGINS = []
+
+# 환경에 따른 CORS 설정
 if os.getenv('FLASK_ENV') == 'production':
-    load_dotenv('.env.production')
+    ALLOWED_ORIGINS = [
+        'https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com'
+    ]
 else:
-    load_dotenv()
+    ALLOWED_ORIGINS = [
+        'http://localhost:5173',
+        'http://192.168.106.239:5173'
+    ]
 
-app = Flask(__name__)
-# 환경 변수에서 허용된 도메인 가져오기
-ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS').split(',')
-
-if os.getenv('ADDITIONAL_ORIGINS'):
-    ALLOWED_ORIGINS.extend(os.getenv('ADDITIONAL_ORIGINS').split(','))
-
+# CORS 설정 적용
 CORS(app, resources={
     r"/detect_plate": {
         "origins": ALLOWED_ORIGINS,
@@ -189,12 +191,17 @@ def process_image():
             relative_box = best_box.astype(float)
             relative_box[:, 0] = relative_box[:, 0] / width
             relative_box[:, 1] = relative_box[:, 1] / height
-            
+
+             # 디버그 이미지를 Base64로 변환
+            _, buffer = cv2.imencode('.jpg', debug_result)
+            debug_image_base64 = base64.b64encode(buffer).decode('utf-8')
+
             return jsonify({
                 'success': True,
                 'plate_number': best_result,
                 'confidence': highest_confidence / 100,
-                'plate_box': relative_box.tolist()
+                'plate_box': relative_box.tolist(),
+                'debug_image': debug_image_base64
             })
         else:
             return jsonify({

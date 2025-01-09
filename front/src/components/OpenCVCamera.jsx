@@ -49,7 +49,8 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
     
     try {
       setIsProcessing(true);
-      
+      console.log('Python Server URL:', import.meta.env.VITE_PYTHON_SERVER_URL);
+
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       canvas.width = videoRef.current.videoWidth;
