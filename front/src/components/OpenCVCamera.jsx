@@ -10,6 +10,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
   const [confidence, setConfidence] = useState(0);
   const [scanCount, setScanCount] = useState(0);
   const [matchedPlates, setMatchedPlates] = useState([]);
+  const [plateBox, setPlateBox] = useState(null);  // 박스 좌표 상태 추가
 
   useEffect(() => {
     startCamera();
@@ -69,10 +70,11 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
       console.log('Server response:', response.data); // 응답 로깅
       
       if (response.data.success) {
-        const { plate_number, confidence: plateConfidence } = response.data;
-        console.log('Detected plate:', plate_number, 'confidence:', plateConfidence);
+        const { plate_number, confidence: plateConfidence, plate_box } = response.data;
+        console.log('Detected plate:', plate_number, 'confidence:', plateConfidence, 'box:', plate_box);
         setDetectedPlate(plate_number);
         setConfidence(plateConfidence);
+        setPlateBox(plate_box);
         
         if (plateConfidence > 0.7) {
           setScanCount(prev => prev + 1);
@@ -114,6 +116,25 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
     }
   };
 
+  // 번호판 박스 렌더링 함수
+  const renderPlateBox = () => {
+    if (!plateBox) return null;
+    
+    return (
+      <div className="plate-box">
+        {plateBox.map((point, index) => (
+          <div
+            key={index}
+            className="box-point"
+            style={{
+              left: `${point[0] * 100}%`,
+              top: `${point[1] * 100}%`
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
   return (
     <div className="opencv-camera">
       <video 
@@ -123,6 +144,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         muted
       />
       <canvas ref={canvasRef} />
+      {renderPlateBox()}  {/* 번호판 박스 렌더링 */}
       <div className="scanning-overlay">
         <div className="scan-area">
           <div className="corner top-left"></div>
