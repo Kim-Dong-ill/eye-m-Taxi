@@ -4,20 +4,24 @@ import bcrypt from "bcrypt";
 // 회원가입
 const memberRegister = async (data) => {
   const query = `
-    INSERT INTO ${schema}.member (member_id, member_password, member_phone, created_at, updated_at)
-    VALUES ($1, $2, $3, NOW(), NOW())
+    INSERT INTO ${schema}.member (member_id, member_password, member_phone)
+    VALUES ($1, $2, $3)
 `;
   try {
     const result = await db.query(query, [
-      data.email,
+      data.userId,
       data.password,
-      data.phone,
+      data.phoneNumber,
     ]);
-    const message = "회원가입 완료";
-    return message;
+
+    if (result.rowCount > 0) {
+      return { success: true, message: "회원가입 완료" };
+    } else {
+      return { success: false, message: "회원가입 실패" };
+    }
   } catch (error) {
     console.log(error);
-    throw error;
+    return { success: false, message: "회원가입 처리 중 오류 발생" };
   }
 };
 
