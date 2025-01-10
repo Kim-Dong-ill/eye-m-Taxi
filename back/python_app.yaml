@@ -9,7 +9,7 @@ resources:
 
 # Flex 환경에 맞는 자동 스케일링 설정
 automatic_scaling:
-  min_num_instances: 0    # min_instances 대신
+  min_num_instances: 1    # min_instances 대신
   max_num_instances: 2  # max_instances 대신
   cool_down_period_sec: 180
   cpu_utilization:        # target_cpu_utilization 대신
