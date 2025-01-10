@@ -6,7 +6,12 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr-kor \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Tesseract 설정
+ENV TESSERACT_CMD=/usr/bin/tesseract
+ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/tessdata
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -17,10 +22,6 @@ RUN pip install -r requirements.txt
 
 # 애플리케이션 코드 복사
 COPY . .
-
-# 환경 변수 설정
-ENV TESSERACT_PATH=/usr/bin/tesseract
-ENV PYTHONUNBUFFERED=1
 
 # 서버 실행
 CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 plate_detection_server:app
