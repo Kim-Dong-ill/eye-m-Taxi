@@ -24,6 +24,7 @@ function CallAccept() {
   const [carNumber] = useState("50바6271");  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [showCamera, setShowCamera] = useState(false);
 
+  
   // 카운트다운 효과 수정
   useEffect(() => {
     if (remainingMinutes <= 1) {
