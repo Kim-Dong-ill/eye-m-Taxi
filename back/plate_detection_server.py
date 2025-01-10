@@ -14,6 +14,17 @@ from google.cloud import logging as cloud_logging
 
 
 app = Flask(__name__)
+
+# 최대 파일 크기 설정 (16MB)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+# 허용되는 파일 확장자
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 # Cloud Logging 설정
 client = cloud_logging.Client()
 client.setup_logging()
@@ -272,15 +283,32 @@ def process_image():
                 'success': False,
                 'error': '이미지가 전송되지 않았습니다.'
             })
-            
         file = request.files['image']
-        npimg = np.fromfile(file, np.uint8)
-        image = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
         
-        if image is None:
-            raise ValueError("이미지 디코딩 실패")
+        if file and allowed_file(file.filename):
+            # 파일 크기 검증 (8MB 제한)
+            if len(file.read()) > 8 * 1024 * 1024:
+                return jsonify({
+                    'success': False,
+                    'error': '파일 크기가 8MB를 초과합니다.'
+                })
             
-        print(f"이미지 디코딩 완료 - 크기: {image.shape}")
+            # 파일 포인터를 다시 처음으로
+            file.seek(0)
+            
+            # 이미지 처리
+            npimg = np.fromfile(file, np.uint8)
+            image = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+            
+            if image is None:
+                raise ValueError("이미지 디코딩 실패")
+                
+            # 이미지 크기 조정 (필요한 경우)
+            max_dimension = 1024
+            height, width = image.shape[:2]
+            if max(height, width) > max_dimension:
+                scale = max_dimension / max(height, width)
+                image = cv2.resize(image, None, fx=scale, fy=scale)
         
         # 2. 번호판 영역 검출
         plate_candidates = detect_plate_area(image)
