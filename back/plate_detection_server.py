@@ -8,6 +8,7 @@ from PIL import Image
 import io
 import base64
 import os
+import re
 import logging
 from google.cloud import logging as cloud_logging
 
@@ -141,11 +142,9 @@ def enhance_plate(plate):
 @app.route('/detect_plate', methods=['POST'])
 def process_image():
     try:
-        logging.info("1번호판 인식 요청 받음")
+        print("1번호판 인식 요청 받음")
 
-         # base64 디코딩 부분 수정
         try:
-            # 'data:image/jpeg;base64,' 부분 제거
             image_data = request.json['image']
             image_data = image_data.split(',')[1]
             logger.info("1.5번 이미지 디코딩 완료"+image_data)
@@ -157,8 +156,7 @@ def process_image():
             if image is None:
                 raise ValueError("이미지 디코딩 실패")
                 
-            logger.info("이미지 디코딩 성공")
-            logger.info(f"이미지 크기: {image.shape}")  # 이미지 정보 로깅
+            print(f"이미지 디코딩 완료 - 크기: {image.shape}")  # 이미지 정보 로깅
             
         except Exception as e:
             logger.error(f"이미지 디코딩 오류: {str(e)}")
@@ -166,61 +164,75 @@ def process_image():
                 'success': False,
                 'error': '이미지 디코딩 실패'
             })
-        logging.info("2번 이미지 디코딩 완료")
+        print("2번 이미지 디코딩 완료")
 
         # 번호판 영역 검출
         plate_candidates = detect_plate_area(image)
-        logging.info(f"3. 번호판 영역 검출 완료 - 후보 수: {len(plate_candidates)}")
+        print(f"3. 번호판 영역 검출 완료 - 후보 수: {len(plate_candidates)}")
 
         best_result = None
         highest_confidence = 0
         best_box = None  # 최적의 박스 좌표 저장용
 
         for box, area, angle in plate_candidates[:3]:
-            logging.info("5번 번호판 영역 추출 및 보정")
-            # 번호판 영역 추출 및 보정
-            plate = preprocess_plate(image, box, angle)
-            enhanced_plate = enhance_plate(plate)
-            logging.info("6번 번호판 영역 보정 완료")
-            print("6. 번호판 영역 보정 완료프린트")
+            try:
+                print("5. 번호판 영역 추출 시작")
+                plate = preprocess_plate(image, box, angle)
+                
+                if plate is None or plate.size == 0:
+                    print("5-1. 유효하지 않은 번호판 이미지")
+                    continue
+                    
+                enhanced_plate = enhance_plate(plate)
+                print(f"6. 번호판 영역 보정 완료 - 크기: {enhanced_plate.shape}")
 
-            # OCR 수행
-            print("7. OCR 수행 시작")
-            plate_text = pytesseract.image_to_string(
-                enhanced_plate,
-                lang='kor',
-                config='--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789가나다라마바사아자차카타파하'
-            )
-            logging.info(f"7-1. OCR 결과: {plate_text}")
-            
-            # 정규식으로 번호판 형식 검증
-            import re
-            plate_pattern = re.compile(r'\d{2,3}[가-힣]\d{4}')
-            matches = plate_pattern.findall(plate_text)
-            logging.info(f"8. 정규식 검증 결과: {matches}")
+                if enhanced_plate is None or enhanced_plate.size == 0:
+                    print("6-1. 이미지 처리 실패")
+                    continue
 
-            if matches:
-                print(f"9. 매칭된 번호판: {matches[0]}")
-                confidence = pytesseract.image_to_data(
+                print("7. OCR 수행 시작")
+                plate_text = pytesseract.image_to_string(
                     enhanced_plate,
                     lang='kor',
-                    config='--psm 7 --oem 3',
-                    output_type=pytesseract.Output.DICT
-                )
-                print("10. 신뢰도 계산 시작")
+                    config='--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789가나다라마바사아자차카타파하'
+                ).strip()
 
-                conf_values = [int(x) for x in confidence['conf'] if x != '-1']
-                if conf_values:
-                    avg_confidence = sum(conf_values) / len(conf_values)
-                    if avg_confidence > highest_confidence:
-                        highest_confidence = avg_confidence
-                        best_result = matches[0]
-                        best_box = box  # 최적의 박스 좌표 저장
-                        print(f"12. 새로운 최적 결과 저장: {best_result}")
+                if not plate_text:
+                    print("7-1. OCR 결과 없음")
+                    continue
+
+                print(f"7-2. OCR 결과 (처음 20자): {plate_text[:20]}")
+                
+                plate_pattern = re.compile(r'\d{2,3}[가-힣]\d{4}')
+                matches = plate_pattern.findall(plate_text)
+                print(f"8. 정규식 검증 결과: {matches}")
+
+                if matches:
+                    print(f"9. 매칭된 번호판: {matches[0]}")
+                    confidence_data = pytesseract.image_to_data(
+                        enhanced_plate,
+                        lang='kor',
+                        config='--psm 7 --oem 3',
+                        output_type=pytesseract.Output.DICT
+                    )
+                    
+                    conf_values = [int(x) for x in confidence_data['conf'] if x != '-1']
+                    if conf_values:
+                        avg_confidence = sum(conf_values) / len(conf_values)
+                        print(f"10. 평균 신뢰도: {avg_confidence:.2f}%")
+                        
+                        if avg_confidence > highest_confidence:
+                            highest_confidence = avg_confidence
+                            best_result = matches[0]
+                            best_box = box
+                            print(f"11. 새로운 최적 결과: {best_result} (신뢰도: {avg_confidence:.2f}%)")
+
+            except Exception as e:
+                print(f"번호판 처리 중 오류: {str(e)}")
+                continue
 
         if best_result:
             print(f"13. 최적의 박스 좌표 저장: {best_box}")
-            logging.info("9번 최적의 박스 좌표 저장"+best_result)
             # 9. Draw Rectangle on Original Image
             debug_result = image.copy()
             cv2.drawContours(debug_result, [best_box], 0, (0, 255, 0), 2)
@@ -237,7 +249,7 @@ def process_image():
              # 디버그 이미지를 Base64로 변환
             _, buffer = cv2.imencode('.jpg', debug_result)
             debug_image_base64 = base64.b64encode(buffer).decode('utf-8')
-            logging.info("11번 번호판 번호 및 신뢰도 반환"+best_result)
+            print(f"12. 최종 결과 - 번호판: {best_result}, 신뢰도: {highest_confidence:.2f}%")
 
             return jsonify({
                 'success': True,
@@ -247,14 +259,15 @@ def process_image():
                 'debug_image': debug_image_base64
             })
         else:
-            logging.info("11번 번호판을 찾을 수 없습니다."+best_result)
+            print("13. 번호판을 찾을 수 없음")
             return jsonify({
                 'success': False,
                 'error': '번호판을 찾을 수 없습니다.'
             })
             
     except Exception as e:
-        print('Error:', str(e))
+        print(f"전체 처리 중 오류: {str(e)}")
+
         return jsonify({
             'success': False,
             'error': str(e)
