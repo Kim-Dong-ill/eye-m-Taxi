@@ -182,28 +182,32 @@ def process_image():
             plate = preprocess_plate(image, box, angle)
             enhanced_plate = enhance_plate(plate)
             logging.info("6번 번호판 영역 보정 완료")
+            print("6. 번호판 영역 보정 완료프린트")
 
             # OCR 수행
+            print("7. OCR 수행 시작")
             plate_text = pytesseract.image_to_string(
                 enhanced_plate,
                 lang='kor',
                 config='--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789가나다라마바사아자차카타파하'
             )
+            logging.info(f"7-1. OCR 결과: {plate_text}")
             
             # 정규식으로 번호판 형식 검증
             import re
             plate_pattern = re.compile(r'\d{2,3}[가-힣]\d{4}')
             matches = plate_pattern.findall(plate_text)
-            logging.info("7번 정규식으로 번호판 형식 검증"+matches)
+            logging.info(f"8. 정규식 검증 결과: {matches}")
 
             if matches:
+                print(f"9. 매칭된 번호판: {matches[0]}")
                 confidence = pytesseract.image_to_data(
                     enhanced_plate,
                     lang='kor',
                     config='--psm 7 --oem 3',
                     output_type=pytesseract.Output.DICT
                 )
-                logging.info("8번 테서렉트 영역 검증"+confidence)
+                print("10. 신뢰도 계산 시작")
 
                 conf_values = [int(x) for x in confidence['conf'] if x != '-1']
                 if conf_values:
@@ -212,8 +216,10 @@ def process_image():
                         highest_confidence = avg_confidence
                         best_result = matches[0]
                         best_box = box  # 최적의 박스 좌표 저장
+                        print(f"12. 새로운 최적 결과 저장: {best_result}")
 
         if best_result:
+            print(f"13. 최적의 박스 좌표 저장: {best_box}")
             logging.info("9번 최적의 박스 좌표 저장"+best_result)
             # 9. Draw Rectangle on Original Image
             debug_result = image.copy()
@@ -231,7 +237,6 @@ def process_image():
              # 디버그 이미지를 Base64로 변환
             _, buffer = cv2.imencode('.jpg', debug_result)
             debug_image_base64 = base64.b64encode(buffer).decode('utf-8')
-            logging.info("10번 디버그 이미지를 Base64로 변환"+debug_image_base64)
             logging.info("11번 번호판 번호 및 신뢰도 반환"+best_result)
 
             return jsonify({
