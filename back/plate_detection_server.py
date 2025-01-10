@@ -187,13 +187,18 @@ def detect_plate_area(image):
     
     # 8. 번호판 영역 추출
     plate_candidates = []
+    debug_candidates = image.copy()
+
     for r in matched_result:
         # 번호판 영역의 좌표 계산
         x_min = min(d['x'] for d in r)
         x_max = max(d['x'] + d['w'] for d in r)
         y_min = min(d['y'] for d in r)
         y_max = max(d['y'] + d['h'] for d in r)
-        
+
+         # 모든 후보 영역을 파란색으로 표시
+        cv2.rectangle(debug_candidates, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
+
         # 여백 추가
         margin_x = int((x_max - x_min) * 0.1)  # 가로 10% 여백
         margin_y = int((y_max - y_min) * 0.2)  # 세로 20% 여백
