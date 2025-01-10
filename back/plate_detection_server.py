@@ -22,15 +22,6 @@ client.setup_logging()
 logger = logging.getLogger('plate_detection')
 logger.setLevel(logging.INFO)
 
-# 현재 파일의 디렉토리 경로를 기준으로 debug 폴더 경로 설정
-current_dir = os.path.dirname(os.path.abspath(__file__))
-debug_dir = os.path.join(current_dir, 'debug')
-
-# 디버그 폴더 생성
-debug_dir = 'debug'
-if not os.path.exists(debug_dir):
-    os.makedirs(debug_dir)
-
 # CORS 설정 수정
 ALLOWED_ORIGINS = []
 
@@ -57,7 +48,7 @@ CORS(app, resources={
     }
 })
 # Tesseract 경로 설정
-pytesseract.pytesseract.tesseract_cmd = os.getenv('TESSERACT_PATH')
+pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 def detect_plate_area(image):
     height, width, channel = image.shape
@@ -318,8 +309,7 @@ def process_image():
                 plate_text = pytesseract.image_to_string(
                     enhanced_plate,
                     lang='kor',
-                    config='--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789가나다라마바사아자차카타파하 \
-                    --tessdata-dir /usr/share/tesseract-ocr/4.00/tessdata'
+                    config='--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789가나다라마바사아자차카타파하'
                 ).strip()
 
                 if not plate_text:
