@@ -52,45 +52,94 @@ pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 def detect_plate_area(image):
     height, width, channel = image.shape
-    
+    # 크기 정규화
+    target_width = 1024
+    scale = target_width / width
+    dim = (target_width, int(height * scale))
+    image = cv2.resize(image, dim)
+
     # 1. 그레이스케일 변환
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # 노이즈 제거
+    gray = cv2.bilateralFilter(gray, 11, 17, 17)
     
     # 2. 가우시안 블러
     img_blur = cv2.GaussianBlur(gray, (5, 5), 0)
     
+     # 2. 엣지 검출 추가
+    edged = cv2.Canny(img_blur, 30, 200)
+
+    # 3. 모폴로지 연산으로 엣지 강화
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    edge_dilated = cv2.dilate(edged, kernel, iterations=1)
+
     # 3. 이진화
-    img_thresh = cv2.adaptiveThreshold(
+    binary = cv2.adaptiveThreshold(
         img_blur, 
         255, 
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY_INV, 19, 9
     )
-    
-    # 4. Contour 찾기
-    contours, _ = cv2.findContours(
-        img_thresh,
-        mode=cv2.RETR_LIST,
+
+    # 3. 두 결과 결합
+    combined = cv2.bitwise_or(edge_dilated, binary)
+
+    # 모폴로지 연산으로 노이즈 제거
+    kernel_closing = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
+    combined = cv2.morphologyEx(combined, cv2.MORPH_CLOSE, kernel_closing)
+
+     # 4. Contour 찾기
+    contours_edge, _ = cv2.findContours(
+        edge_dilated,
+        mode=cv2.RETR_TREE,
         method=cv2.CHAIN_APPROX_SIMPLE
     )
-    
+
+    contours_binary, _ = cv2.findContours(
+        binary,
+        mode=cv2.RETR_TREE,
+        method=cv2.CHAIN_APPROX_SIMPLE
+    )
+
+    all_contours = list(contours_edge) + list(contours_binary)
+
     # 5. Contour 정보 저장
     temp_result = np.zeros((height, width, channel), dtype=np.uint8)
     contours_dict = []
+    processed_areas = set()  # 중복 영역 체크용
+
     
-    for contour in contours:
+    for contour in all_contours:
         x, y, w, h = cv2.boundingRect(contour)
-        cv2.rectangle(temp_result, pt1=(x,y), pt2=(x+w, y+h), color=(255,255,255), thickness=2)
+        area = w * h
+
+        # 중복 영역 체크 (비슷한 위치의 컨투어 제거)
+        area_key = f"{x//10},{y//10},{w//10},{h//10}"  # 10픽셀 단위로 반올림하여 비슷한 영역 체크
+        if area_key in processed_areas:
+            continue
         
-        contours_dict.append({
-            'contour': contour,
-            'x': x,
-            'y': y,
-            'w': w,
-            'h': h,
-            'cx': x + (w / 2),
-            'cy': y + (h / 2)
-        })
+        processed_areas.add(area_key)
+
+        # 근사화된 컨투어 계산
+        peri = cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
+
+        # 사각형 형태의 컨투어만 선택 (4개의 꼭지점)
+        if len(approx) >= 4:
+            cv2.rectangle(temp_result, pt1=(x,y), pt2=(x+w, y+h), 
+                        color=(255,255,255), thickness=2)
+            
+            contours_dict.append({
+                'contour': contour,
+                'x': x,
+                'y': y,
+                'w': w,
+                'h': h,
+                'cx': x + (w / 2),
+                'cy': y + (h / 2),
+                'approx': approx
+            })
     
     # 6. 글자 크기로 후보 선정
     MIN_AREA = 2000
@@ -110,6 +159,8 @@ def detect_plate_area(image):
             d['idx'] = cnt
             cnt += 1
             possible_contours.append(d)
+            
+    print(f"가능한 번호판 후보 수: {len(possible_contours)}")
     
     # 7. Contour 배열로 번호판 후보 선정
     def find_chars(contour_list):
