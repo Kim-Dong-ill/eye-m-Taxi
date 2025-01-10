@@ -12,7 +12,7 @@ import re
 import logging
 from google.cloud import logging as cloud_logging
 
-
+ 
 app = Flask(__name__)
 
 # 최대 파일 크기 설정 (16MB)

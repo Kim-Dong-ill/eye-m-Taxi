@@ -36,7 +36,7 @@ function CallAccept() {
         return prev - 2;
       });
     }, 5000);
-
+ 
     return () => clearInterval(timer);
   }, [remainingMinutes]);
 
