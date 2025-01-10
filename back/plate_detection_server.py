@@ -304,7 +304,15 @@ def process_image():
                 if enhanced_plate is None or enhanced_plate.size == 0:
                     print("6-1. 이미지 처리 실패")
                     continue
-
+                
+                # OCR 실행 전 Tesseract 설정 확인
+                tessdata_dir = os.environ.get('TESSDATA_PREFIX', '/usr/share/tesseract-ocr/tessdata')
+                if not os.path.exists(os.path.join(tessdata_dir, 'kor.traineddata')):
+                    print(f"한국어 데이터 파일이 없습니다. 경로: {tessdata_dir}/kor.traineddata")
+                    print(f"현재 TESSDATA_PREFIX: {os.environ.get('TESSDATA_PREFIX')}")
+                    print(f"사용 가능한 언어 파일들:")
+                    os.system(f"ls -la {tessdata_dir}")
+                
                 print("7. OCR 수행 시작")
                 plate_text = pytesseract.image_to_string(
                     enhanced_plate,

@@ -6,12 +6,19 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr-kor \
     libgl1-mesa-glx \
     libglib2.0-0 \
+    wget \  
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Tesseract 설정
-ENV TESSERACT_CMD=/usr/bin/tesseract
+ENV TESSERACT_PATH=/usr/bin/tesseract
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/tessdata
+
+# 한국어 데이터 파일 수동 다운로드 (기존 파일이 없는 경우를 대비)
+RUN wget https://github.com/tesseract-ocr/tessdata/raw/main/kor.traineddata -P /usr/share/tesseract-ocr/tessdata/
+
+# 한국어 데이터 파일 확인
+RUN ls -la /usr/share/tesseract-ocr/tessdata/kor.traineddata || echo "한국어 데이터 파일 없음"
 
 # 작업 디렉토리 설정
 WORKDIR /app
