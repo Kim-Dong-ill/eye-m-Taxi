@@ -94,8 +94,8 @@ def detect_plate_area(image):
     
     # 6. 글자 크기로 후보 선정
     MIN_AREA = 2000
-    MIN_WIDTH, MIN_HEIGHT = 12, 20
-    MIN_RATIO, MAX_RATIO = 0.2, 1.2
+    MIN_WIDTH, MIN_HEIGHT = 100, 20
+    MIN_RATIO, MAX_RATIO = 4.0, 5.2
     
     possible_contours = []
     
@@ -176,10 +176,10 @@ def detect_plate_area(image):
     for idx_list in result_idx:
         matched_result.append(np.take(possible_contours, idx_list))
     
-
-
+    
     # 8. 번호판 영역 추출
     plate_candidates = []
+    debug_candidates = image.copy()
 
     for r in matched_result:
         # 번호판 영역의 좌표 계산
@@ -188,27 +188,30 @@ def detect_plate_area(image):
         y_min = min(d['y'] for d in r)
         y_max = max(d['y'] + d['h'] for d in r)
 
-        width = x_max - x_min
-        height = y_max - y_min
-        area = width * height
-        ratio = width / height
+         # 모든 후보 영역을 파란색으로 표시
+        cv2.rectangle(debug_candidates, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
 
-        # 번호판 형태 검증
-        if area > MIN_AREA and MIN_RATIO < ratio < MAX_RATIO:
-            # 여백 추가
-            margin_x = int(width * 0.15)
-            margin_y = int(height * 0.1)
-            plate_candidates.append((
-                np.array([
-                    [max(0, x_min - margin_x), max(0, y_min - margin_y)],
-                    [min(image.shape[1], x_max + margin_x), max(0, y_min - margin_y)],
-                    [min(image.shape[1], x_max + margin_x), min(image.shape[0], y_max + margin_y)],
-                    [max(0, x_min - margin_x), min(image.shape[0], y_max + margin_y)]
-                ], dtype=np.int32),
-                area,
-                0
-            ))
-
+        # 여백 추가
+        margin_x = int((x_max - x_min) * 0.1)  # 가로 10% 여백
+        margin_y = int((y_max - y_min) * 0.2)  # 세로 20% 여백
+        x_min = max(0, x_min - margin_x)
+        x_max = min(width, x_max + margin_x)
+        y_min = max(0, y_min - margin_y)
+        y_max = min(height, y_max + margin_y)
+        
+        # 박스 좌표 생성
+        box = np.array([
+            [x_min, y_min],
+            [x_max, y_min],
+            [x_max, y_max],
+            [x_min, y_max]
+        ], dtype=np.int32)
+        
+        area = (x_max - x_min) * (y_max - y_min)
+        angle = 0  # 수직 정렬된 번호판 가정
+        
+        plate_candidates.append((box, area, angle))
+    
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
 def preprocess_plate(image, box, angle):
@@ -238,13 +241,6 @@ def preprocess_plate(image, box, angle):
     return plate
 
 def enhance_plate(plate):
-
-    # 크기 정규화
-    PLATE_WIDTH = 400
-    aspect_ratio = plate.shape[1] / plate.shape[0]
-    plate_height = int(PLATE_WIDTH / aspect_ratio)
-    plate = cv2.resize(plate, (PLATE_WIDTH, plate_height))
-
     # 7. Additional Image Processing
     gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
@@ -254,11 +250,10 @@ def enhance_plate(plate):
     # 8. Final Thresholding
     _, binary = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     
-    # 모폴로지 연산으로 문자 선명화
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
-    morph = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+    # 디버깅: 전처리된 이미지 저장
+    cv2.imwrite('debug_enhanced.jpg', binary)
     
-    return morph
+    return binary
 
 @app.route('/detect_plate', methods=['POST'])
 def process_image():
@@ -320,23 +315,6 @@ def process_image():
                     os.system(f"ls -la {tessdata_dir}")
                 
                 print("7. OCR 수행 시작")
-                 # 먼저 신뢰도 검사
-                confidence_data = pytesseract.image_to_data(
-                    enhanced_plate,
-                    lang='kor',
-                    config='--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789가나다라마바사아자차카타파하',
-                    output_type=pytesseract.Output.DICT
-                )
-                
-                # 신뢰도 검사 강화
-                MIN_CONFIDENCE = 60  # 최소 신뢰도 60%
-                conf_values = [int(x) for x in confidence_data['conf'] if x != '-1']
-                
-                if not conf_values or (sum(conf_values) / len(conf_values)) <= MIN_CONFIDENCE:
-                    print(f"7-1. 낮은 신뢰도: {sum(conf_values) / len(conf_values):.2f}%")
-                    continue
-
-                # 신뢰도가 충분한 경우에만 OCR 텍스트 추출
                 plate_text = pytesseract.image_to_string(
                     enhanced_plate,
                     lang='kor',
@@ -344,36 +322,35 @@ def process_image():
                 ).strip()
 
                 if not plate_text:
-                    print("7-2. OCR 결과 없음")
+                    print("7-1. OCR 결과 없음")
                     continue
 
                 print(f"7-2. OCR 결과 (처음 20자): {plate_text[:20]}")
                 
-                # 번호판 패턴 강화
-                plate_pattern = re.compile(r'\d{2,3}[가나다라마바사아자차카타파하]\s?\d{4}')
+                plate_pattern = re.compile(r'\d{2,3}[가-힣]\d{4}')
                 matches = plate_pattern.findall(plate_text)
                 print(f"8. 정규식 검증 결과: {matches}")
 
                 if matches:
                     print(f"9. 매칭된 번호판: {matches[0]}")
-                    avg_confidence = sum(conf_values) / len(conf_values)
-                    print(f"10. 평균 신뢰도: {avg_confidence:.2f}%")
+                    confidence_data = pytesseract.image_to_data(
+                        enhanced_plate,
+                        lang='kor',
+                        config='--psm 7 --oem 3',
+                        output_type=pytesseract.Output.DICT
+                    )
                     
                     conf_values = [int(x) for x in confidence_data['conf'] if x != '-1']
                     if conf_values:
                         avg_confidence = sum(conf_values) / len(conf_values)
                         print(f"10. 평균 신뢰도: {avg_confidence:.2f}%")
                         
-                        # 신뢰도가 더 높은 경우에만 결과 업데이트
                         if avg_confidence > highest_confidence:
-                            # 추가 검증: 번호판 형식 검사
-                            plate_num = matches[0].replace(" ", "")
-                            if len(plate_num) in [7, 8]:  # 7자리 또는 8자리 번호판만 허용
-                                highest_confidence = avg_confidence
-                                best_result = plate_num
-                                best_box = box
-                                print(f"11. 새로운 최적 결과: {best_result} (신뢰도: {avg_confidence:.2f}%)")
-                                
+                            highest_confidence = avg_confidence
+                            best_result = matches[0]
+                            best_box = box
+                            print(f"11. 새로운 최적 결과: {best_result} (신뢰도: {avg_confidence:.2f}%)")
+
             except Exception as e:
                 print(f"번호판 처리 중 오류: {str(e)}")
                 continue
