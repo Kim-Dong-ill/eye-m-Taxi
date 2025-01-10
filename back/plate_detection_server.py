@@ -11,6 +11,8 @@ import os
 import re
 import logging
 from google.cloud import logging as cloud_logging
+from google.cloud import storage
+import datetime
 
 
 app = Flask(__name__)
@@ -50,12 +52,34 @@ CORS(app, resources={
 # Tesseract 경로 설정
 pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
+def upload_debug_image(image, step_name):
+    try:
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"debug/{timestamp}_{step_name}.jpg"
+        
+        client = storage.Client()
+        bucket = client.bucket('eyemtaxi-bucket')
+        blob = bucket.blob(filename)
+        
+        _, buffer = cv2.imencode('.jpg', image)
+        blob.upload_from_string(buffer.tobytes(), content_type='image/jpeg')
+        
+        url = f"https://storage.googleapis.com/eyemtaxi-bucket/{filename}"
+        logger.info(f"Debug image uploaded for {step_name}: {url}")
+        return url
+        
+    except Exception as e:
+        logger.error(f"Debug image upload failed: {str(e)}")
+        return None
+    
 def detect_plate_area(image):
     height, width, channel = image.shape
-    
+    upload_debug_image(image, "1_original")
+
     # 1. 그레이스케일 변환
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
+    upload_debug_image(gray, "2_grayscale")
+
     # 2. 가우시안 블러
     img_blur = cv2.GaussianBlur(gray, (5, 5), 0)
     
@@ -66,6 +90,12 @@ def detect_plate_area(image):
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY_INV, 19, 9
     )
+    upload_debug_image(img_thresh, "4_threshold")
+
+    # Contour 시각화
+    temp_result = np.zeros((height, width, channel), dtype=np.uint8)
+    
+    upload_debug_image(temp_result, "5_contours")
     
     # 4. Contour 찾기
     contours, _ = cv2.findContours(
@@ -98,7 +128,11 @@ def detect_plate_area(image):
     MIN_RATIO, MAX_RATIO = 0.2, 1.2
     
     possible_contours = []
-    
+    for d in possible_contours:
+        cv2.rectangle(temp_result, pt1=(d['x'], d['y']), 
+                     pt2=(d['x']+d['w'], d['y']+d['h']), 
+                     color=(255,255,255), thickness=2)
+    upload_debug_image(temp_result, "5_contours")
     cnt = 0
     for d in contours_dict:
         area = d['w'] * d['h']
@@ -245,7 +279,8 @@ def enhance_plate(plate):
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     enhanced = clahe.apply(gray)
     denoised = cv2.fastNlMeansDenoising(enhanced)
-    
+    upload_debug_image(denoised, "8_plate_denoised")
+
     # 8. Final Thresholding
     _, binary = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     
