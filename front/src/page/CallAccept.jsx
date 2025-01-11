@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Button from "../components/button";
-import Map from "../components/Map";
+import CallMap from "../components/CallMap";
 import sound from "/icon/sound.svg";
 import call from "/icon/call.svg";
 import OpenCVCamera from '../components/OpenCVCamera';
-
 import "../css/callAccept.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function CallAccept() {
 
@@ -19,6 +18,20 @@ function CallAccept() {
   };
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { pickup, dropoff} = location.state || {};
+
+  // 좌표값이 제대로 전달되었는지 콘솔에 출력
+  useEffect(() => {
+    console.log("Calling 페이지에서 전달받은 좌표값:");
+    console.log("pickup:", pickup);
+    console.log("dropoff:", dropoff);
+  }, [pickup, dropoff]);
+
+  if (!pickup || !dropoff) {
+    return <div>경로 데이터를 불러오는 중입니다...</div>;
+  }
+
   const [remainingMinutes, setRemainingMinutes] = useState(5);  // 초기값 5분으로 설정
   const [carNumber] = useState(generateRandomCarNumber());  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [showCamera, setShowCamera] = useState(false);
@@ -76,37 +89,37 @@ function CallAccept() {
     },
   ];
 
+    // 번호판 인식 후 Driveing으로 이동
+    const handlePlateDetection = () => {
+      navigate(`/driveing?pickup=${JSON.stringify(pickup)}&dropoff=${JSON.stringify(dropoff)}`);
+    };
+
   return (
     <div className="callAccept">
-    {showCamera ? (
-      <OpenCVCamera 
-        expectedPlateNumber={carNumber}
-        onPlateDetected={(rect) => {
-          // 번호판 영역이 감지되면 처리
-          console.log('번호판 영역 감지:', rect);
-          // 여기서 번호판 인식이 완료되면 driving 페이지로 이동
-          navigate("/driveing");
-        }}
-      />
-    ) : (
-      <>
-        <Map height={height} />
-        <div className="buttons">
-          {btnData.map((btn, index) => (
-            <Button key={index} btnData={btn} />
-          ))}
-        </div>
-        <div className="icons">
-          <button className="icon-button" onClick={handleSpeak}>
-            <img src={sound} alt="speaker" />
-          </button>
-          <button className="icon-button" onClick={handleCall}>
-            <img src={call} alt="phone" />
-          </button>
-        </div>
-      </>
-    )}
-  </div>
+      {showCamera ? (
+        <OpenCVCamera 
+          expectedPlateNumber={carNumber}
+          onPlateDetected={handlePlateDetection} // 번호판 감지 시 처리
+        />
+      ) : (
+        <>
+          <CallMap height={height} pickup={pickup} dropoff={dropoff} />
+          <div className="buttons">
+            {btnData.map((btn, index) => (
+              <Button key={index} btnData={btn} />
+            ))}
+          </div>
+          <div className="icons">
+            <button className="icon-button" onClick={handleSpeak}>
+              <img src={sound} alt="speaker" />
+            </button>
+            <button className="icon-button" onClick={handleCall}>
+              <img src={call} alt="phone" />
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
