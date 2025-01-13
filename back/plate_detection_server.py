@@ -132,7 +132,8 @@ def detect_plate_area(image):
         cv2.rectangle(temp_result, pt1=(d['x'], d['y']), 
                      pt2=(d['x']+d['w'], d['y']+d['h']), 
                      color=(255,255,255), thickness=2)
-    upload_debug_image(temp_result, "5_contours")
+    upload_debug_image(temp_result, "6_contours")
+    
     cnt = 0
     for d in contours_dict:
         area = d['w'] * d['h']
@@ -263,29 +264,60 @@ def preprocess_plate(image, box, angle):
     matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
     plate = cv2.warpPerspective(image, matrix, (width, height))
     
-    if angle < -45:
-        angle = 90 + angle
+    # 회전 각도 보정
+    if angle != 0:
+        # 회전 방향 확인 및 수정
+        if angle < -45:
+            angle = 90 + angle
+        elif angle > 45:
+            angle = -(90 - angle)
+
     if abs(angle) > 0:
         (h, w) = plate.shape[:2]
         center = (w // 2, h // 2)
-        M = cv2.getRotationMatrix2D(center, angle, 1.0)
-        plate = cv2.warpAffine(plate, M, (w, h))
-    
+        M = cv2.getRotationMatrix2D(center, -angle, 1.0)
+        plate = cv2.warpAffine(plate, M, (w, h),
+                             flags=cv2.INTER_CUBIC,
+                             borderMode=cv2.BORDER_REPLICATE)
     return plate
 
 def enhance_plate(plate):
-    # 7. Additional Image Processing
+    # 이미지 크기 확인 및 조정
+    min_width = 200  # 최소 너비
+    current_height, current_width = plate.shape[:2]
+    
+    if current_width < min_width:
+        scale = min_width / current_width
+        new_width = min_width
+        new_height = int(current_height * scale)
+        plate = cv2.resize(plate, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
+    
+    # 나머지 처리 과정
     gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     enhanced = clahe.apply(gray)
     denoised = cv2.fastNlMeansDenoising(enhanced)
-    upload_debug_image(denoised, "8_plate_denoised")
-
-    # 8. Final Thresholding
-    _, binary = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     
-    # 디버깅: 전처리된 이미지 저장
-    cv2.imwrite('debug_enhanced.jpg', binary)
+    # 이미지가 회전되었는지 확인
+    coords = np.column_stack(np.where(denoised > 0))
+    if len(coords) > 0:
+        angle = cv2.minAreaRect(coords)[-1]
+        if angle < -45:
+            angle = 90 + angle
+        
+        # 필요한 경우 이미지 회전 보정
+        if abs(angle) > 1:
+            (h, w) = denoised.shape[:2]
+            center = (w // 2, h // 2)
+            M = cv2.getRotationMatrix2D(center, angle, 1.0)
+            denoised = cv2.warpAffine(denoised, M, (w, h),
+                                    flags=cv2.INTER_CUBIC,
+                                    borderMode=cv2.BORDER_REPLICATE)
+    
+    upload_debug_image(denoised, "8_plate_denoised")
+    
+    # Otsu's 이진화
+    _, binary = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     
     return binary
 
