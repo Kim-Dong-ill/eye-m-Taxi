@@ -129,11 +129,6 @@ def detect_plate_area(image):
     MIN_RATIO, MAX_RATIO = 0.2, 1.2
     
     possible_contours = []
-    for d in possible_contours:
-        cv2.rectangle(temp_result, pt1=(d['x'], d['y']), 
-                     pt2=(d['x']+d['w'], d['y']+d['h']), 
-                     color=(255,255,255), thickness=2)
-    upload_debug_image(temp_result, "6_contours")
 
     cnt = 0
     for d in contours_dict:
@@ -146,6 +141,14 @@ def detect_plate_area(image):
             d['idx'] = cnt
             cnt += 1
             possible_contours.append(d)
+
+    for d in possible_contours:
+        cv2.rectangle(temp_result, pt1=(d['x'], d['y']), 
+                     pt2=(d['x']+d['w'], d['y']+d['h']), 
+                     color=(255,255,255), thickness=2)
+    upload_debug_image(temp_result, "6_contours")
+
+    
     
     # 7. Contour 배열로 번호판 후보 선정
     def find_chars(contour_list):
@@ -204,7 +207,6 @@ def detect_plate_area(image):
             
             break
             
-        upload_debug_image(matched_result_idx, "5_matched_result_idx")
         return matched_result_idx
 
 
@@ -248,8 +250,9 @@ def detect_plate_area(image):
         angle = 0  # 수직 정렬된 번호판 가정
         
         plate_candidates.append((box, area, angle))
-        upload_debug_image(plate_candidates, "plate_candidates")
 
+    upload_debug_image(debug_candidates, "7_plate_detection")
+    
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
 def preprocess_plate(image, box, angle):
