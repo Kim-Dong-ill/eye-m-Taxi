@@ -54,8 +54,10 @@ pytesseract.pytesseract.tesseract_cmd = '/usr/bin/tesseract'
 
 def upload_debug_image(image, step_name):
     try:
-        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"debug/{timestamp}_{step_name}.jpg"
+        today_folder = datetime.datetime.now().strftime('%Y%m%d')
+        timestamp = datetime.datetime.now().strftime('%H%M%S')
+
+        filename = f"debug/{today_folder}/{timestamp}_{step_name}.jpg"
         
         client = storage.Client()
         bucket = client.bucket('eyemtaxi-bucket')
@@ -133,7 +135,7 @@ def detect_plate_area(image):
                      pt2=(d['x']+d['w'], d['y']+d['h']), 
                      color=(255,255,255), thickness=2)
     upload_debug_image(temp_result, "6_contours")
-    
+
     cnt = 0
     for d in contours_dict:
         area = d['w'] * d['h']
@@ -249,41 +251,64 @@ def detect_plate_area(image):
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
 def preprocess_plate(image, box, angle):
-    # 6. Rotate Plate Images
     width = int(max(np.linalg.norm(box[0] - box[1]),
                    np.linalg.norm(box[2] - box[3])))
     height = int(max(np.linalg.norm(box[0] - box[3]),
                     np.linalg.norm(box[1] - box[2])))
     
     src_pts = box.astype("float32")
-    dst_pts = np.array([[0, height-1],
-                       [0, 0],
+    dst_pts = np.array([[0, 0],
                        [width-1, 0],
-                       [width-1, height-1]], dtype="float32")
+                       [width-1, height-1],
+                       [0, height-1]], dtype="float32")
     
     matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
     plate = cv2.warpPerspective(image, matrix, (width, height))
     
-    # 회전 각도 보정
-    if angle != 0:
-        # 회전 방향 확인 및 수정
-        if angle < -45:
-            angle = 90 + angle
-        elif angle > 45:
-            angle = -(90 - angle)
-
-    if abs(angle) > 0:
-        (h, w) = plate.shape[:2]
-        center = (w // 2, h // 2)
-        M = cv2.getRotationMatrix2D(center, -angle, 1.0)
-        plate = cv2.warpAffine(plate, M, (w, h),
-                             flags=cv2.INTER_CUBIC,
-                             borderMode=cv2.BORDER_REPLICATE)
+    # 텍스트 방향 감지를 위한 이진화
+    gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
+    _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    
+    # 연결 요소 분석
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    if contours:
+        # 가장 큰 연결 요소의 방향 확인
+        largest_contour = max(contours, key=cv2.contourArea)
+        rect = cv2.minAreaRect(largest_contour)
+        angle = rect[-1]
+        
+        # 각도 보정 (항상 수평이 되도록)
+        if abs(angle) > 45:
+            angle = 90 - abs(angle)
+            if angle < 0:
+                angle += 90
+        elif abs(angle) > 85:  # 거의 수직인 경우
+            angle = 0
+            
+        # 회전 적용
+        if abs(angle) > 1:
+            (h, w) = plate.shape[:2]
+            center = (w // 2, h // 2)
+            M = cv2.getRotationMatrix2D(center, angle, 1.0)
+            plate = cv2.warpAffine(plate, M, (w, h),
+                                 flags=cv2.INTER_CUBIC,
+                                 borderMode=cv2.BORDER_REPLICATE)
+            
+        # 텍스트가 뒤집혔는지 확인
+        gray_rotated = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
+        upper_half = gray_rotated[:h//2, :]
+        lower_half = gray_rotated[h//2:, :]
+        
+        if np.mean(upper_half) > np.mean(lower_half):
+            # 이미지가 뒤집힌 경우 180도 회전
+            plate = cv2.rotate(plate, cv2.ROTATE_180)
+    
     return plate
 
 def enhance_plate(plate):
     # 이미지 크기 확인 및 조정
-    min_width = 200  # 최소 너비
+    min_width = 200
     current_height, current_width = plate.shape[:2]
     
     if current_width < min_width:
@@ -292,20 +317,25 @@ def enhance_plate(plate):
         new_height = int(current_height * scale)
         plate = cv2.resize(plate, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
     
-    # 나머지 처리 과정
+    # 이미지 전처리
     gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
     enhanced = clahe.apply(gray)
     denoised = cv2.fastNlMeansDenoising(enhanced)
     
-    # 이미지가 회전되었는지 확인
+    # 최종 방향 확인 및 보정
     coords = np.column_stack(np.where(denoised > 0))
     if len(coords) > 0:
-        angle = cv2.minAreaRect(coords)[-1]
-        if angle < -45:
-            angle = 90 + angle
+        rect = cv2.minAreaRect(coords)
+        angle = rect[-1]
         
-        # 필요한 경우 이미지 회전 보정
+        # 수직 이미지를 수평으로 회전
+        if abs(angle) > 45:
+            angle = 90 - abs(angle)
+            if angle < 0:
+                angle += 90
+        
+        # 회전 적용
         if abs(angle) > 1:
             (h, w) = denoised.shape[:2]
             center = (w // 2, h // 2)
