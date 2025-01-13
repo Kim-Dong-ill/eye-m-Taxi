@@ -80,7 +80,7 @@ def detect_plate_area(image):
 
     # 1. 그레이스케일 변환
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    upload_debug_image(gray, "2_grayscale")
+    # upload_debug_image(gray, "2_grayscale")
 
     # 2. 가우시안 블러
     img_blur = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -92,12 +92,11 @@ def detect_plate_area(image):
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY_INV, 19, 9
     )
-    upload_debug_image(img_thresh, "4_threshold")
+    # upload_debug_image(img_thresh, "4_threshold")
 
     # Contour 시각화
     temp_result = np.zeros((height, width, channel), dtype=np.uint8)
     
-    upload_debug_image(temp_result, "5_contours")
     
     # 4. Contour 찾기
     contours, _ = cv2.findContours(
@@ -205,8 +204,10 @@ def detect_plate_area(image):
             
             break
             
+        upload_debug_image(matched_result_idx, "5_matched_result_idx")
         return matched_result_idx
-    
+
+
     result_idx = find_chars(possible_contours)
     matched_result = []
     
@@ -247,7 +248,8 @@ def detect_plate_area(image):
         angle = 0  # 수직 정렬된 번호판 가정
         
         plate_candidates.append((box, area, angle))
-    
+        upload_debug_image(plate_candidates, "plate_candidates")
+
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
 def preprocess_plate(image, box, angle):
