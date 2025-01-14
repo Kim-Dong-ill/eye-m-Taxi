@@ -376,6 +376,7 @@ def enhance_plate(plate):
     denoised = cv2.fastNlMeansDenoising(enhanced)
     
     # 최종 방향 확인 및 보정
+    height, width = denoised.shape[:2]  # 현재 이미지 크기 저장
     coords = np.column_stack(np.where(denoised > 0))
     if len(coords) > 0:
         rect = cv2.minAreaRect(coords)
@@ -389,12 +390,19 @@ def enhance_plate(plate):
         
         # 회전 적용
         if abs(angle) > 1:
-            (h, w) = denoised.shape[:2]
-            center = (w // 2, h // 2)
+            center = (width // 2, height // 2)
             M = cv2.getRotationMatrix2D(center, angle, 1.0)
-            denoised = cv2.warpAffine(denoised, M, (w, h),
+            denoised = cv2.warpAffine(denoised, M, (width, height),
                                     flags=cv2.INTER_CUBIC,
                                     borderMode=cv2.BORDER_REPLICATE)
+            
+            # 회전 후 텍스트가 뒤집혔는지 확인
+            upper_half = denoised[:height//2, :]
+            lower_half = denoised[height//2:, :]
+            
+            if np.mean(upper_half) > np.mean(lower_half):
+                # 이미지가 뒤집힌 경우 180도 회전
+                denoised = cv2.rotate(denoised, cv2.ROTATE_180)
     
     upload_debug_image(denoised, "8_plate_denoised")
     
