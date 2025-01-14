@@ -216,7 +216,7 @@ def detect_plate_area(image):
     for idx_list in result_idx:
         matched_result.append(np.take(possible_contours, idx_list))
     
-     # 인접한 번호판 후보 영역 병합
+    # 인접한 번호판 후보 영역 병합
     merged_results = []
     for i, r1 in enumerate(matched_result):
         x1_min = min(d['x'] for d in r1)
@@ -225,7 +225,7 @@ def detect_plate_area(image):
         y1_max = max(d['y'] + d['h'] for d in r1)
         
         merged = False
-        for r2 in merged_results:
+        for j, r2 in enumerate(merged_results):
             x2_min = min(d['x'] for d in r2)
             x2_max = max(d['x'] + d['w'] for d in r2)
             y2_min = min(d['y'] for d in r2)
@@ -238,15 +238,16 @@ def detect_plate_area(image):
             height2 = y2_max - y2_min
             
             # 병합 조건
-            # 평균 문자 너비 계산 수정
             avg_char_width = np.mean([d['w'] for d in r1] + [d['w'] for d in r2])
             
             if (x_distance < 2 * avg_char_width and
                 y_overlap > 0.5 * min(height1, height2) and
                 abs(height1 - height2) < 0.3 * max(height1, height2)):
                 
-                # 리스트 병합 방식 수정
-                r2.extend([d for d in r1])  # r1의 요소들을 r2에 추가
+                # numpy array를 리스트로 변환하여 병합
+                merged_contours = list(r2)
+                merged_contours.extend(list(r1))
+                merged_results[j] = np.array(merged_contours)
                 merged = True
                 break
         
@@ -258,11 +259,13 @@ def detect_plate_area(image):
     debug_candidates = image.copy()
 
     for r in merged_results:
+        # numpy array를 리스트로 처리
+        r_list = list(r)
         # 번호판 영역의 좌표 계산
-        x_min = min(d['x'] for d in r)
-        x_max = max(d['x'] + d['w'] for d in r)
-        y_min = min(d['y'] for d in r)
-        y_max = max(d['y'] + d['h'] for d in r)
+        x_min = min(d['x'] for d in r_list)
+        x_max = max(d['x'] + d['w'] for d in r_list)
+        y_min = min(d['y'] for d in r_list)
+        y_max = max(d['y'] + d['h'] for d in r_list)
 
                 # 번호판 비율 검사 (한국 택시 번호판 비율 520mm × 110mm ≈ 4.73:1)
         plate_width = x_max - x_min
