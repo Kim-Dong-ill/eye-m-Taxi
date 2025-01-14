@@ -303,6 +303,7 @@ def detect_plate_area(image):
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
 def preprocess_plate(image, box, angle):
+    # 이미지 크기 계산
     width = int(max(np.linalg.norm(box[0] - box[1]),
                    np.linalg.norm(box[2] - box[3])))
     height = int(max(np.linalg.norm(box[0] - box[3]),
@@ -314,6 +315,7 @@ def preprocess_plate(image, box, angle):
                        [width-1, height-1],
                        [0, height-1]], dtype="float32")
     
+    # 투시 변환 행렬 계산 및 적용
     matrix = cv2.getPerspectiveTransform(src_pts, dst_pts)
     plate = cv2.warpPerspective(image, matrix, (width, height))
     
@@ -328,33 +330,33 @@ def preprocess_plate(image, box, angle):
         # 가장 큰 연결 요소의 방향 확인
         largest_contour = max(contours, key=cv2.contourArea)
         rect = cv2.minAreaRect(largest_contour)
-        angle = rect[-1]
+        current_angle = rect[-1]
         
         # 각도 보정 (항상 수평이 되도록)
-        if abs(angle) > 45:
-            angle = 90 - abs(angle)
-            if angle < 0:
-                angle += 90
-        elif abs(angle) > 85:  # 거의 수직인 경우
-            angle = 0
+        if abs(current_angle) > 45:
+            current_angle = 90 - abs(current_angle)
+            if current_angle < 0:
+                current_angle += 90
+        elif abs(current_angle) > 85:  # 거의 수직인 경우
+            current_angle = 0
             
         # 회전 적용
-        if abs(angle) > 1:
-            (h, w) = plate.shape[:2]
-            center = (w // 2, h // 2)
-            M = cv2.getRotationMatrix2D(center, angle, 1.0)
-            plate = cv2.warpAffine(plate, M, (w, h),
+        if abs(current_angle) > 1:
+            current_height, current_width = plate.shape[:2]
+            center = (current_width // 2, current_height // 2)
+            M = cv2.getRotationMatrix2D(center, current_angle, 1.0)
+            plate = cv2.warpAffine(plate, M, (current_width, current_height),
                                  flags=cv2.INTER_CUBIC,
                                  borderMode=cv2.BORDER_REPLICATE)
             
-        # 텍스트가 뒤집혔는지 확인
-        gray_rotated = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
-        upper_half = gray_rotated[:h//2, :]
-        lower_half = gray_rotated[h//2:, :]
-        
-        if np.mean(upper_half) > np.mean(lower_half):
-            # 이미지가 뒤집힌 경우 180도 회전
-            plate = cv2.rotate(plate, cv2.ROTATE_180)
+            # 텍스트가 뒤집혔는지 확인
+            gray_rotated = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
+            upper_half = gray_rotated[:current_height//2, :]
+            lower_half = gray_rotated[current_height//2:, :]
+            
+            if np.mean(upper_half) > np.mean(lower_half):
+                # 이미지가 뒤집힌 경우 180도 회전
+                plate = cv2.rotate(plate, cv2.ROTATE_180)
     
     return plate
 
