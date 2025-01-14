@@ -216,35 +216,76 @@ def detect_plate_area(image):
     for idx_list in result_idx:
         matched_result.append(np.take(possible_contours, idx_list))
     
+    # 인접한 번호판 후보 영역 병합
+    merged_results = []
+    for i, r1 in enumerate(matched_result):
+        x1_min = min(d['x'] for d in r1)
+        x1_max = max(d['x'] + d['w'] for d in r1)
+        y1_min = min(d['y'] for d in r1)
+        y1_max = max(d['y'] + d['h'] for d in r1)
+        
+        merged = False
+        for r2 in merged_results:
+            x2_min = min(d['x'] for d in r2)
+            x2_max = max(d['x'] + d['w'] for d in r2)
+            y2_min = min(d['y'] for d in r2)
+            y2_max = max(d['y'] + d['h'] for d in r2)
+            
+            # 두 영역이 수평으로 가까이 있고 비슷한 높이에 있는지 확인
+            x_distance = min(abs(x1_max - x2_min), abs(x2_max - x1_min))
+            y_overlap = min(y1_max, y2_max) - max(y1_min, y2_min)
+            height1 = y1_max - y1_min
+            height2 = y2_max - y2_min
+            
+            # 병합 조건
+            avg_char_width = np.mean([d['w'] for d in r1 + r2])
+            if (x_distance < 2 * avg_char_width and
+                y_overlap > 0.5 * min(height1, height2) and
+                abs(height1 - height2) < 0.3 * max(height1, height2)):
+                
+                r2.extend(r1)  # 두 영역 병합
+                merged = True
+                break
+        
+        if not merged:
+            merged_results.append(r1)
+
     # 8. 번호판 영역 추출
     plate_candidates = []
     debug_candidates = image.copy()
 
-    for r in matched_result:
+    for r in merged_results:
         # 번호판 영역의 좌표 계산
         x_min = min(d['x'] for d in r)
         x_max = max(d['x'] + d['w'] for d in r)
         y_min = min(d['y'] for d in r)
         y_max = max(d['y'] + d['h'] for d in r)
 
-         # 모든 후보 영역을 파란색으로 표시
-        cv2.rectangle(debug_candidates, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
-
-        # 여백 추가
-        margin_x = int((x_max - x_min) * 0.1)  # 가로 10% 여백
-        margin_y = int((y_max - y_min) * 0.2)  # 세로 20% 여백
-        x_min = max(0, x_min - margin_x)
-        x_max = min(width, x_max + margin_x)
-        y_min = max(0, y_min - margin_y)
-        y_max = min(height, y_max + margin_y)
+                # 번호판 비율 검사 (한국 택시 번호판 비율 520mm × 110mm ≈ 4.73:1)
+        plate_width = x_max - x_min
+        plate_height = y_max - y_min
+        plate_ratio = plate_width / plate_height
         
-        # 박스 좌표 생성
-        box = np.array([
-            [x_min, y_min],
-            [x_max, y_min],
-            [x_max, y_max],
-            [x_min, y_max]
-        ], dtype=np.int32)
+        # 번호판 비율이 적절한 경우만 처리 (4.0 ~ 5.5 사이)
+        if 4.0 <= plate_ratio <= 5.5:  # 카메라 각도나 왜곡을 고려하여 여유 있게 설정
+            # 모든 후보 영역을 파란색으로 표시
+            cv2.rectangle(debug_candidates, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
+
+            # 여백 추가 (택시 번호판 특성을 고려하여 조정)
+            margin_x = int((x_max - x_min) * 0.05)  # 가로 5% 여백
+            margin_y = int((y_max - y_min) * 0.3)   # 세로 30% 여백 (위아래 여유 확보)
+            x_min = max(0, x_min - margin_x)
+            x_max = min(width, x_max + margin_x)
+            y_min = max(0, y_min - margin_y)
+            y_max = min(height, y_max + margin_y)
+            
+            # 박스 좌표 생성
+            box = np.array([
+                [x_min, y_min],
+                [x_max, y_min],
+                [x_max, y_max],
+                [x_min, y_max]
+            ], dtype=np.int32)
         
         area = (x_max - x_min) * (y_max - y_min)
         angle = 0  # 수직 정렬된 번호판 가정
