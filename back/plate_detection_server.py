@@ -76,7 +76,7 @@ def upload_debug_image(image, step_name):
     
 def detect_plate_area(image):
     height, width, channel = image.shape
-    upload_debug_image(image, "1_original")
+    upload_debug_image(image, "원본 사진")
 
     # 1. 그레이스케일 변환
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -146,9 +146,7 @@ def detect_plate_area(image):
         cv2.rectangle(temp_result, pt1=(d['x'], d['y']), 
                      pt2=(d['x']+d['w'], d['y']+d['h']), 
                      color=(255,255,255), thickness=2)
-    upload_debug_image(temp_result, "6_contours")
-
-    
+    upload_debug_image(temp_result, "글자 후보 영역")
     
     # 7. Contour 배열로 번호판 후보 선정
     def find_chars(contour_list):
@@ -298,7 +296,7 @@ def detect_plate_area(image):
         
         plate_candidates.append((box, area, angle))
 
-    upload_debug_image(debug_candidates, "7_plate_detection")
+    upload_debug_image(debug_candidates, "번호판 후보 영역")
     
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
@@ -406,7 +404,7 @@ def enhance_plate(plate):
                 # 이미지가 뒤집힌 경우 180도 회전
                 denoised = cv2.rotate(denoised, cv2.ROTATE_180)
     
-    upload_debug_image(denoised, "8_plate_denoised")
+    upload_debug_image(denoised, "번호판 보정")
     
     # Otsu's 이진화
     _, binary = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -473,17 +471,26 @@ def process_image():
                     os.system(f"ls -la {tessdata_dir}")
                 
                 print("7. OCR 수행 시작")
+                # 택시 번호판 형식에 맞는 화이트리스트 설정
+                whitelist = '0123456789가나다라마바사아자차카타파하거너더러머버서어저처커터퍼허'
+                
+                # OCR 설정 최적화
+                custom_config = f'--psm 7 --oem 3 -c tessedit_char_whitelist={whitelist}'
+                
+                # OCR 수행 전 이미지 저장 (디버깅용)
+                upload_debug_image(enhanced_plate, "8_ocr_input")
+                
                 plate_text = pytesseract.image_to_string(
                     enhanced_plate,
-                    lang='kor',
-                    config='--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789가나다라마바사아자차카타파하'
+                    lang='kor+eng',  # 한글과 숫자를 모두 인식하기 위해
+                    config=custom_config
                 ).strip()
 
                 if not plate_text:
                     print("7-1. OCR 결과 없음")
                     continue
 
-                print(f"7-2. OCR 결과 (처음 20자): {plate_text[:20]}")
+                print(f"7-2. OCR 결과 : {plate_text}")
                 
                 plate_pattern = re.compile(r'\d{2,3}[가-힣]\d{4}')
                 matches = plate_pattern.findall(plate_text)
