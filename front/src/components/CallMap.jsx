@@ -11,7 +11,7 @@ function CallMap({ height, pickup, dropoff }) {
       
         <div className="map-wrapper" style={{ width: '100%', height: `${height}px` }}>
           
-            <div ref={mapContainerRef} className="mapContainer" style={{ width: '100%', height: '100%' }} />
+            <div ref={mapContainerRef} className="mapContainer" style={{ width: '100%', height: '100%' }}></div>
         </div>
     );
 }

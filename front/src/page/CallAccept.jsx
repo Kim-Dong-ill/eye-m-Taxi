@@ -27,7 +27,7 @@ function CallAccept() {
     console.log("pickup:", pickup);
     console.log("dropoff:", dropoff);
   }, [pickup, dropoff]);
-
+  
   if (!pickup || !dropoff) {
     return <div>경로 데이터를 불러오는 중입니다...</div>;
   }
@@ -89,37 +89,37 @@ function CallAccept() {
     },
   ];
 
-    // 번호판 인식 후 Driveing으로 이동
-    const handlePlateDetection = () => {
-      navigate(`/driveing?pickup=${JSON.stringify(pickup)}&dropoff=${JSON.stringify(dropoff)}`);
-    };
-
   return (
     <div className="callAccept">
-      {showCamera ? (
-        <OpenCVCamera 
-          expectedPlateNumber={carNumber}
-          onPlateDetected={handlePlateDetection} // 번호판 감지 시 처리
-        />
-      ) : (
-        <>
-          <CallMap height={height} pickup={pickup} dropoff={dropoff} />
-          <div className="buttons">
-            {btnData.map((btn, index) => (
-              <Button key={index} btnData={btn} />
-            ))}
-          </div>
-          <div className="icons">
-            <button className="icon-button" onClick={handleSpeak}>
-              <img src={sound} alt="speaker" />
-            </button>
-            <button className="icon-button" onClick={handleCall}>
-              <img src={call} alt="phone" />
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+    {showCamera ? (
+      <OpenCVCamera 
+        expectedPlateNumber={carNumber}
+        onPlateDetected={(rect) => {
+          // 번호판 영역이 감지되면 처리
+          console.log('번호판 영역 감지:', rect);
+          // 여기서 번호판 인식이 완료되면 driving 페이지로 이동
+          navigate("/driveing");
+        }}
+      />
+    ) : (
+      <>
+        <CallMap height={height} pickup={pickup} dropoff={dropoff} />
+        <div className="buttons">
+          {btnData.map((btn, index) => (
+            <Button key={index} btnData={btn} />
+          ))}
+        </div>
+        <div className="icons">
+          <button className="icon-button" onClick={handleSpeak}>
+            <img src={sound} alt="speaker" />
+          </button>
+          <button className="icon-button" onClick={handleCall}>
+            <img src={call} alt="phone" />
+          </button>
+        </div>
+      </>
+    )}
+  </div>
   );
 }
 

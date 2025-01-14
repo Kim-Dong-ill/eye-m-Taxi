@@ -97,7 +97,7 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff) => {
 
             // console.log(pickup.coordinates.lng, pickup.coordinates.lat);
             
-            // new mapboxgl.Marker({ color: 'blue' })
+            // const pickupMarker = new mapboxgl.Marker({ offset:[0,0] })
             //     .setLngLat([pickup.coordinates.lng, pickup.coordinates.lat])
             //     .setPopup(new mapboxgl.Popup().setText("출발"))
             //     .addTo(mapRef.current);
@@ -107,9 +107,7 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff) => {
             //     .setPopup(new mapboxgl.Popup().setText("도착"))
             //     .addTo(mapRef.current);
             
-
         });
-
         // 클린업 함수 추가
         return () => {
             if (mapRef.current) {
@@ -142,15 +140,23 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff) => {
                         'line-width': 10,
                     },
                 });
-                // const pickupMarker = new mapboxgl.Marker({ color: 'blue' })
-                // .setLngLat([pickup.coordinates.lng, pickup.coordinates.lat])
-                // .setPopup(new mapboxgl.Popup().setText("출발"))
-                // .addTo(mapRef.current);
+
               // console.log(`route : ${route.features.geometry.cooridnates}`)
             }
         }
     }, [route]); // 의존성 배열에 route 추가
-
+    useEffect(()=>{
+        
+        const pickupMarker = new mapboxgl.Marker({fixed: true})
+        .setLngLat([pickup.coordinates.lng, pickup.coordinates.lat])
+        .setPopup(new mapboxgl.Popup().setText("출발"))
+        .addTo(mapRef.current);
+  
+        return () => {
+            // 컴포넌트가 unmount 될 때 마커와 지도 이벤트 정리
+            pickupMarker.remove();
+          };
+    },[])
 
     return mapRef;
 };
