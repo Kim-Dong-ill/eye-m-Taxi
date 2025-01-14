@@ -216,7 +216,7 @@ def detect_plate_area(image):
     for idx_list in result_idx:
         matched_result.append(np.take(possible_contours, idx_list))
     
-    # 인접한 번호판 후보 영역 병합
+     # 인접한 번호판 후보 영역 병합
     merged_results = []
     for i, r1 in enumerate(matched_result):
         x1_min = min(d['x'] for d in r1)
@@ -238,12 +238,15 @@ def detect_plate_area(image):
             height2 = y2_max - y2_min
             
             # 병합 조건
-            avg_char_width = np.mean([d['w'] for d in r1 + r2])
+            # 평균 문자 너비 계산 수정
+            avg_char_width = np.mean([d['w'] for d in r1] + [d['w'] for d in r2])
+            
             if (x_distance < 2 * avg_char_width and
                 y_overlap > 0.5 * min(height1, height2) and
                 abs(height1 - height2) < 0.3 * max(height1, height2)):
                 
-                r2.extend(r1)  # 두 영역 병합
+                # 리스트 병합 방식 수정
+                r2.extend([d for d in r1])  # r1의 요소들을 r2에 추가
                 merged = True
                 break
         
