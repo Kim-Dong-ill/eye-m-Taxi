@@ -93,7 +93,7 @@ function VoiceRecord() {
         onClick={handleVoiceRecord}
         className={isRecording === true ? "recording" : ""}
       />
-      {isRecording && <div className="recordingText">듣는 중...</div>}
+      {isRecording && <div className="recordingText" style={{fontSize: "64px",fontWeight:"bold"}}>듣는 중...</div>}
       <div className="recorded-text">
         {recordedText && <p>"{recordedText}"</p>}
       </div>

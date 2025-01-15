@@ -10,7 +10,7 @@ function CallPreview() {
   console.log("승차 좌표",pickup.coordinates);//승차 좌표 
   console.log("하차 좌표",dropoff.coordinates);//하차 좌표
   
-  const height = 550;
+  const height = 500;
   const btnData ={
     text : "호출하기",
     link : "/calling" 
