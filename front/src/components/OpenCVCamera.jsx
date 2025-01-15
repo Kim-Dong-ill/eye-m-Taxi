@@ -49,7 +49,6 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
     
     try {
       setIsProcessing(true);
-      console.log('Python Server URL:', import.meta.env.VITE_PYTHON_SERVER_URL);
 
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
@@ -67,22 +66,26 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         },
         timeout: 30000 // 30초 타임아웃 설정
       });
-      
-      console.log('Server response:', response.data); // 응답 로깅
-      
+            
       if (response.data.success) {
-        const { plate_number, confidence: plateConfidence, plate_box } = response.data;
-        console.log('Detected plate:', plate_number, 'confidence:', plateConfidence, 'box:', plate_box);
+        const { plate_number, confidence, plate_box } = response.data;
+
+
+        // 번호판 문자열 정규화 (공백 제거)
+        const normalizedDetected = plate_number.replace(/\s+/g, '');
+        const normalizedExpected = expectedPlateNumber.replace(/\s+/g, '');
+
         setDetectedPlate(plate_number);
-        setConfidence(plateConfidence);
+        setConfidence(confidence);
         setPlateBox(plate_box);
         
-        if (plateConfidence > 0.7) {
+        // 신뢰도 70% 이상 체크 (백엔드에서 받은 원래 값 사용)
+        if (confidence > 70) {
           setScanCount(prev => prev + 1);
-          setMatchedPlates(prev => [...prev, plate_number]);
+          setMatchedPlates(prev => [...prev, normalizedDetected]);
           
           if (matchedPlates.length >= 2) {
-            const lastThreeScans = [...matchedPlates.slice(-2), plate_number];
+            const lastThreeScans = [...matchedPlates.slice(-2), normalizedDetected];
             const mostCommon = findMostCommon(lastThreeScans);
             
             if (mostCommon.includes(expectedPlateNumber)) {
