@@ -80,19 +80,14 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         setPlateBox(plate_box);
         
         // 신뢰도 70% 이상 체크 (백엔드에서 받은 원래 값 사용)
-        if (confidence > 70) {
+        if (confidence > 0.7) {
           setScanCount(prev => prev + 1);
           setMatchedPlates(prev => [...prev, normalizedDetected]);
-          
-          if (matchedPlates.length >= 2) {
-            const lastThreeScans = [...matchedPlates.slice(-2), normalizedDetected];
-            const mostCommon = findMostCommon(lastThreeScans);
             
-            if (mostCommon.includes(expectedPlateNumber)) {
-              onPlateDetected(mostCommon);
-              stopCamera();
-              return;
-            }
+          if (plate_number.includes(expectedPlateNumber)) {
+            onPlateDetected(plate_number);
+            stopCamera();
+            return;
           }
         }
       }
