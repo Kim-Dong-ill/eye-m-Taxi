@@ -2,27 +2,39 @@
   width: 100%;
   form {
     display: flex;
-    border: 2.5px solid var(--bg-yellow);
+    border: 7px solid var(--bg-yellow);
     border-radius: 10px;
     padding: 10px;
     width: 100%;
   }
   .address-input {
+    padding: 10px 0;
     flex: 1;
     background-color: var(--bg-background);
     color: var(--bg-yellow);
     border: none;
     outline: none;
-    font-size: 32px;
-    white-space: nowrap;      // 텍스트가 한 줄로 유지되도록 설정
-    // overflow: hidden;         // 넘치는 텍스트 숨기기
-    text-overflow: ellipsis; // 말줄임표(...) 표시
-    max-width: clamp(280px, 50%, 500px)
+    font-size: 38px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: clamp(280px, 50%, 500px);
+
+    // placeholder 스타일 추가
+    &::placeholder {
+      color: rgba(var(--bg-yellow));
+      font-size: 38px;
+      transition: opacity 0.3s ease; // 부드러운 효과
+    }
+
+    // placeholder 포커스 시 스타일
+    &:focus::placeholder {
+      opacity: 0.4; // 포커스 시 더 투명하게
+    }
   }
 
   .mic-button {
-    width: clamp(40px, 5vw, 50px);  // 뷰포트 너비에 따라 30px에서 50px 사이로 조절
-    height: clamp(40px, 5vw, 50px); // 정사각형 유지를 위해 높이도 동일
+    width: clamp(60px, 5vw, 80px);  // 뷰포트 너비에 따라 30px에서 50px 사이로 조절
+    height: clamp(60px, 5vw, 80px); // 정사각형 유지를 위해 높이도 동일
     background-color: var(--bg-background);
     border: none;
     cursor: pointer;
