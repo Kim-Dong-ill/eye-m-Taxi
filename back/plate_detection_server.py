@@ -506,7 +506,8 @@ def process_image():
                         output_type=pytesseract.Output.DICT
                     )
                     
-                    conf_values = [int(x) for x in confidence_data['conf'] if x != '-1']
+                    # 신뢰도 값을 float로 변환 후 정수로 반올림
+                    conf_values = [round(float(x)) for x in confidence_data['conf'] if x != '-1']
                     if conf_values:
                         avg_confidence = sum(conf_values) / len(conf_values)
                         print(f"10. 평균 신뢰도: {avg_confidence:.2f}%")
