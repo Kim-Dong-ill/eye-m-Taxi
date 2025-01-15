@@ -21,7 +21,7 @@ function CallAccept() {
   const navigate = useNavigate();
   const [remainingMinutes, setRemainingMinutes] = useState(5);  // 초기값 5분으로 설정
   // const [carNumber] = useState(generateRandomCarNumber());  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
-  const [carNumber] = useState("50바6271");  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
+  const [carNumber] = useState("123가4568");  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [showCamera, setShowCamera] = useState(false);
 
   
