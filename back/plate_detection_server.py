@@ -414,12 +414,11 @@ def enhance_plate(plate):
 @app.route('/detect_plate', methods=['POST'])
 def process_image():
     try:
-        print("1번호판 인식 요청 받음")
+        print("1. 번호판 인식 요청 받음")
 
         try:
             image_data = request.json['image']
             image_data = image_data.split(',')[1]
-            logger.info("1.5번 이미지 디코딩 완료"+image_data)
             # base64 디코딩
             nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
             # 이미지 디코드
@@ -427,8 +426,6 @@ def process_image():
             
             if image is None:
                 raise ValueError("이미지 디코딩 실패")
-                
-            print(f"이미지 디코딩 완료 - 크기: {image.shape}")  # 이미지 정보 로깅
             
         except Exception as e:
             logger.error(f"이미지 디코딩 오류: {str(e)}")
@@ -436,7 +433,7 @@ def process_image():
                 'success': False,
                 'error': '이미지 디코딩 실패'
             })
-        print("2번 이미지 디코딩 완료")
+        print("2. 이미지 디코딩 완료")
 
         # 번호판 영역 검출
         plate_candidates = detect_plate_area(image)
@@ -491,7 +488,11 @@ def process_image():
                     continue
 
                 print(f"7-2. OCR 결과 : {plate_text}")
-                
+
+                # OCR 결과 전처리: 공백 제거 및 문자 정리
+                plate_text = re.sub(r'\s+', '', plate_text)  # 모든 공백 제거
+                plate_text = re.sub(r'[^0-9가-힣]', '', plate_text)  # 숫자와 한글만 남김
+
                 plate_pattern = re.compile(r'\d{2,3}[가-힣]\d{4}')
                 matches = plate_pattern.findall(plate_text)
                 print(f"8. 정규식 검증 결과: {matches}")
@@ -521,7 +522,7 @@ def process_image():
                 continue
 
         if best_result:
-            print(f"13. 최적의 박스 좌표 저장: {best_box}")
+            print(f"12. 최적의 박스 좌표 저장: {best_box}")
             # 9. Draw Rectangle on Original Image
             debug_result = image.copy()
             cv2.drawContours(debug_result, [best_box], 0, (0, 255, 0), 2)
@@ -538,17 +539,17 @@ def process_image():
              # 디버그 이미지를 Base64로 변환
             _, buffer = cv2.imencode('.jpg', debug_result)
             debug_image_base64 = base64.b64encode(buffer).decode('utf-8')
-            print(f"12. 최종 결과 - 번호판: {best_result}, 신뢰도: {highest_confidence:.2f}%")
+            print(f"13. 최종 결과 - 번호판: {best_result}, 신뢰도: {highest_confidence:.2f}%")
 
             return jsonify({
                 'success': True,
                 'plate_number': best_result,
                 'confidence': highest_confidence / 100,
                 'plate_box': relative_box.tolist(),
-                'debug_image': debug_image_base64
+                # 'debug_image': debug_image_base64
             })
         else:
-            print("13. 번호판을 찾을 수 없음")
+            print("error. 번호판을 찾을 수 없음")
             return jsonify({
                 'success': False,
                 'error': '번호판을 찾을 수 없습니다.'
