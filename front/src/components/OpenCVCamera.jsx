@@ -80,7 +80,7 @@ function OpenCVCamera({ expectedPlateNumber, onPlateDetected }) {
         setPlateBox(plate_box);
         
         // 신뢰도 70% 이상 체크 (백엔드에서 받은 원래 값 사용)
-        if (confidence > 0.7) {
+        if (confidence > 0.6) {
           setScanCount(prev => prev + 1);
           setMatchedPlates(prev => [...prev, normalizedDetected]);
             
