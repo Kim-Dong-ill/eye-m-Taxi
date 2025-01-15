@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { mapConfig } from '../config/mapConfig';
 import useCallPreviewMap from '../hooks/useCallMap';
-
+import mapboxgl from 'mapbox-gl';
 function CallMap({ height, pickup, dropoff }) {
     const mapContainerRef = useRef(null);
 

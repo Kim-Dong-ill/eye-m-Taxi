@@ -89,6 +89,13 @@ function CallAccept() {
     },
   ];
 
+  const test = () => {
+    if(pickup && dropoff) {
+      console.log("+==============",pickup, dropoff)
+      navigate("/driveing", {state:{pickup, dropoff}})
+    }
+  }
+
   return (
     <div className="callAccept">
     {showCamera ? (
@@ -116,6 +123,9 @@ function CallAccept() {
           <button className="icon-button" onClick={handleCall}>
             <img src={call} alt="phone" />
           </button>
+        </div>
+        <div onClick={test}>
+          testButton
         </div>
       </>
     )}

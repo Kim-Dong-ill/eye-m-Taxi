@@ -31,7 +31,7 @@ function Calling() {
 
     const timerNavigate = setTimeout(() => {
       if (pickup && dropoff) {
-      navigate(`/callAccept/`, {
+      navigate("/callAccept/", {
         state: { pickup, dropoff },
       });
     }
