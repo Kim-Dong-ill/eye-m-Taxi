@@ -1,0 +1,40 @@
+.color-palette {
+    padding: 1rem;
+    display: flex;
+    gap: 2rem;
+    
+    .palette-section {
+      h3 {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        color: var(--theme-color);
+      }
+  
+      .color-picker {
+        .color-input {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          width: 80px;
+          height: 80px;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+  
+          &::-webkit-color-swatch-wrapper {
+            padding: 0;
+          }
+          
+          &::-webkit-color-swatch {
+            border: 7px solid var(--bg-yellow);
+            border-radius: 8px;
+          }
+          
+          &::-moz-color-swatch {
+            border: 2px solid #666;
+            border-radius: 8px;
+          }
+        }
+      }
+    }
+  }

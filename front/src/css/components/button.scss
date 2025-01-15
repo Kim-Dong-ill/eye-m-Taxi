@@ -1,18 +1,20 @@
 .button{
+    padding: 45px 0;
     width: 327px;
     height: 80px;
     background-color: var(--bg-background);
-    border: 2.5px solid var(--bg-yellow);
+    border: 7px solid var(--bg-yellow);
     border-radius: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     color: var(--bg-yellow);
     font-size: 38px;
+    font-weight: bold;
     cursor: pointer;
 
     &:hover {
         background-color: var(--bg-yellow);
-        color: black;
+        color: var(--bg-background)
     }
 }

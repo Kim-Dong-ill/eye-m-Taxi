@@ -83,8 +83,6 @@ function CallAccept() {
       <OpenCVCamera 
         expectedPlateNumber={carNumber}
         onPlateDetected={(rect) => {
-          // 번호판 영역이 감지되면 처리
-          console.log('번호판 영역 감지:', rect);
           // 여기서 번호판 인식이 완료되면 driving 페이지로 이동
           navigate("/driveing");
         }}

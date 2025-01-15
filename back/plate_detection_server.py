@@ -76,15 +76,16 @@ def upload_debug_image(image, step_name):
     
 def detect_plate_area(image):
     height, width, channel = image.shape
-    upload_debug_image(image, "원본 사진")
+    upload_debug_image(image, "1. 원본 사진")
 
     # 1. 그레이스케일 변환
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # upload_debug_image(gray, "2_grayscale")
+    upload_debug_image(gray, "2. 그레이스케일")
 
     # 2. 가우시안 블러
     img_blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    
+    upload_debug_image(img_blur, "3. 가우시안블러")
+
     # 3. 이진화
     img_thresh = cv2.adaptiveThreshold(
         img_blur, 
@@ -92,7 +93,7 @@ def detect_plate_area(image):
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY_INV, 19, 9
     )
-    # upload_debug_image(img_thresh, "4_threshold")
+    upload_debug_image(img_thresh, "4. 이진화")
 
     # Contour 시각화
     temp_result = np.zeros((height, width, channel), dtype=np.uint8)
@@ -108,7 +109,7 @@ def detect_plate_area(image):
     # 5. Contour 정보 저장
     temp_result = np.zeros((height, width, channel), dtype=np.uint8)
     contours_dict = []
-    
+
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
         cv2.rectangle(temp_result, pt1=(x,y), pt2=(x+w, y+h), color=(255,255,255), thickness=2)
@@ -146,7 +147,7 @@ def detect_plate_area(image):
         cv2.rectangle(temp_result, pt1=(d['x'], d['y']), 
                      pt2=(d['x']+d['w'], d['y']+d['h']), 
                      color=(255,255,255), thickness=2)
-    upload_debug_image(temp_result, "글자 후보 영역")
+    upload_debug_image(temp_result, "5. 글자 후보 영역")
     
     # 7. Contour 배열로 번호판 후보 선정
     def find_chars(contour_list):
@@ -296,7 +297,7 @@ def detect_plate_area(image):
         
         plate_candidates.append((box, area, angle))
 
-    upload_debug_image(debug_candidates, "번호판 후보 영역")
+    upload_debug_image(debug_candidates, "6. 번호판 후보 영역")
     
     return sorted(plate_candidates, key=lambda x: x[1], reverse=True)
 
@@ -404,7 +405,7 @@ def enhance_plate(plate):
                 # 이미지가 뒤집힌 경우 180도 회전
                 denoised = cv2.rotate(denoised, cv2.ROTATE_180)
     
-    upload_debug_image(denoised, "번호판 보정")
+    upload_debug_image(denoised, "7. 번호판 보정")
     
     # Otsu's 이진화
     _, binary = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -475,7 +476,7 @@ def process_image():
                 custom_config = f'--psm 7 --oem 3 -c tessedit_char_whitelist={whitelist}'
                 
                 # OCR 수행 전 이미지 저장 (디버깅용)
-                upload_debug_image(enhanced_plate, "8_ocr_input")
+                upload_debug_image(enhanced_plate, "8. 이미지 확정")
                 
                 plate_text = pytesseract.image_to_string(
                     enhanced_plate,
