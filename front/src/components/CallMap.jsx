@@ -2,11 +2,12 @@ import React, { useRef, useEffect } from 'react';
 import { mapConfig } from '../config/mapConfig';
 import useCallPreviewMap from '../hooks/useCallMap';
 import mapboxgl from 'mapbox-gl';
-function CallMap({ height, pickup, dropoff }) {
+
+function CallMap({ height, pickup, dropoff, showTaxi = false }) {
     const mapContainerRef = useRef(null);
 
-    const mapRef = useCallPreviewMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, pickup, dropoff);
-    
+    const mapRef = useCallPreviewMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, pickup, dropoff, showTaxi);
+
     return (
       
         <div className="map-wrapper" style={{ width: '100%', height: `${height}px` }}>

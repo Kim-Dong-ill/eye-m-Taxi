@@ -46,6 +46,7 @@ function CallPreview() {
         height={height}
         pickup={pickup}
         dropoff={dropoff}
+        showTaxi={false}
       /> {/* 경로가 있으면 지도 표시 */}
       <Button btnData={btnData} />
     </div>
