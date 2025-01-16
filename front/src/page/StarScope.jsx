@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Button from "../components/button";
 import "../css/starScope.scss";
-import bigStar from "../../public/icon/bigStar.svg";
+import SvgThema from "../components/SvgThema";
+import { useTheme } from '../components/contain/ThemeContext'
 
 function StarScope() {
+  const { themeColor } = useTheme()
   const [starCount, setStarCount] = useState(1);  // 별 개수 상태 추가
   const btnData = {
     text: "별점 남기기",
@@ -17,11 +19,11 @@ function StarScope() {
     <div className="starScope">
       <div className="smallStar">
         {[...Array(starCount)].map((_, index) => (
-          <img key={index} src={bigStar} alt="" />
+          <SvgThema key={index} icon="BIG_STAR_SVG" color={themeColor} size="100px"/>
         ))}
       </div>
       <div className="bigStar"onClick={handleStarClick}>
-        <img src={bigStar} alt="" />
+        <SvgThema icon="BIG_STAR_SVG" color={themeColor}/>
       </div>
       <Button btnData={btnData} />
     </div>

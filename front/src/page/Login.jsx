@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import Header from "../components/contain/Header";
-
 import InputBox from "../components/InputBox";
 import "../css/login.scss";
 import user from "../../public/icon/Person.svg";
@@ -13,7 +12,6 @@ import { loginUser } from "../store/thunkFunctions";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loginData, setLoginData] = useState({
@@ -90,7 +88,7 @@ function Login() {
 
   const data = [
     {
-       img: user,
+      icon: "PERSON_SVG",
       type: "text",
       placeholder: "아이디",
       name: "email",
@@ -98,7 +96,7 @@ function Login() {
       onChange: handleChange
     },
     {
-      img: lock,
+      icon: "LOCK_SVG",
       type: "password",
       placeholder: "비밀번호",
       name: "password",
