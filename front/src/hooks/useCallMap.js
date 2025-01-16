@@ -11,6 +11,7 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, show
   const [taxiRoute, setTaxiRoute] = useState(null);
   const [taxiMarker, setTaxiMarker] = useState(null); // 택시 마커 상태
 
+  const taxiIconUrl = '/icon/taxi2.svg'; 
   // 중간 지점 계산 함수
   const calculateMidPoint = (pickup, dropoff) => {
     if (!pickup || !dropoff) return null;
@@ -139,28 +140,29 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, show
         .setPopup(new mapboxgl.Popup().setText("도착"))
         .addTo(mapRef.current);
 
-      // 택시 마커 추가
-      if (showTaxi) {
-        const midPoint = calculateMidPoint(pickup, dropoff);
-        if (midPoint) {
-          // 기존 마커가 있으면 마커를 업데이트
-          if (taxiMarker) {
-            taxiMarker.setLngLat([midPoint.lng, midPoint.lat]);
-          } else {
-            // 마커가 없으면 새로 생성
-            const taxi = new mapboxgl.Marker({ color: 'green' }) // 택시 마커 색상
-              .setLngLat([midPoint.lng, midPoint.lat])
-              .setPopup(new mapboxgl.Popup().setText("택시 위치"))
-              .addTo(mapRef.current);
+// 택시 마커 추가
+if (showTaxi) {
+    const midPoint = calculateMidPoint(pickup, dropoff);
+    if (midPoint) {
+      const taxiIcon = document.createElement('div');
+      taxiIcon.style.backgroundImage = `url(${taxiIconUrl})`; // public 폴더 내의 SVG 파일 URL 사용
+      taxiIcon.style.width = '60px'; // 아이콘 크기
+      taxiIcon.style.height = '60px';
+      taxiIcon.style.backgroundSize = 'contain'; // SVG 파일에 맞는 크기 조정
 
-            setTaxiMarker(taxi); // 상태에 마커 저장
-          }
+      // 택시 마커 설정
+      const taxi = new mapboxgl.Marker(taxiIcon)
+        .setLngLat([midPoint.lng, midPoint.lat])
+        .setPopup(new mapboxgl.Popup().setText("택시 위치"))
+        .addTo(mapRef.current);
 
-          // 택시 경로 요청
-          getTaxiRoute();
-        }
-      }
-    });
+      setTaxiMarker(taxi); // 상태에 마커 저장
+    }
+
+    // 택시 경로 요청
+    getTaxiRoute();
+  }
+});
 
     // 클린업 함수 추가
     return () => {
