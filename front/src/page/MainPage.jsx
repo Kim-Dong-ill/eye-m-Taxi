@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import "../css/mainPage.scss";
 import { useLocation, useNavigate } from "react-router-dom";
