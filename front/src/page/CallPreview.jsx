@@ -40,6 +40,7 @@ function CallPreview() {
     onClick: handleNavigateToCalling
   };
 
+
   return (
     <div className='callPreview'>
       <CallMap
@@ -48,7 +49,10 @@ function CallPreview() {
         dropoff={dropoff}
         showTaxi={false}
       /> {/* 경로가 있으면 지도 표시 */}
-      <Button btnData={btnData} />
+      <div className='callPreviewBtnWrap'>
+        <div className='price'>예상금액 17,200원</div>
+        <Button btnData={btnData} />
+      </div>
     </div>
   )
 }
