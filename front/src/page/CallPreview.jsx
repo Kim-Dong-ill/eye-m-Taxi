@@ -8,19 +8,22 @@ function CallPreview() {
   const location = useLocation();
   const navigate = useNavigate();
   const { pickup, dropoff } = location.state || {};
+
   const height = 500;
-  const btnData ={
-    text : "호출하기",
-    link : "/calling" 
-  }
+  const btnData = {
+    text: "호출하기",
+    link: "/calling",
+    onClick: handleNavigateToCalling
+  };
 
   console.log("승차 좌표", pickup?.coordinates);//승차 좌표 
   console.log("하차 좌표", dropoff?.coordinates);//하차 좌표
-  
+
   // pickup과 dropoff가 없는 경우 처리
   if (!pickup || !dropoff) {
     return <div>경로 데이터를 불러오는 중입니다...</div>;
-  
+  }
+
   const handleNavigateToCalling = () => {
     console.log("-----------")
     navigate('/calling', {
@@ -30,13 +33,6 @@ function CallPreview() {
       }
     });
   };
-
-  const btnData = {
-    text: "호출하기",
-    link: "/calling",
-    onClick: handleNavigateToCalling
-  };
-
 
   return (
     <div className='callPreview'>
