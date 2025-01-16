@@ -119,7 +119,7 @@ const loginWithKakao = async (req, res) => {
     //   kakaoId: result.kakao_id,
     //   // nickname: userResponse.data.properties.nickname || null, // 닉네임을 응답으로만 포함
     // });
-    const redirectUrl = `http://localhost:5173/kakao/callback?accessToken=${token}`;
+    const redirectUrl = `https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com/kakao/callback?accessToken=${token}`;
     res.redirect(redirectUrl); // accessToken을 URL 쿼리 파라미터로 전달하고 리디렉션
 
   } catch (error) {
