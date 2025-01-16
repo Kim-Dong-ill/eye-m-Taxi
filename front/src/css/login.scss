@@ -41,11 +41,16 @@
             width: 327px;
             height: 80px;
             background-color: var(--bg-background);
-            border: 2.5px solid var(--bg-yellow);
+            border: 7px solid var(--bg-yellow);
             border-radius: 10px;
             cursor: pointer;
             color: var(--bg-yellow);
-            font-size: 36px;
+            font-size: 38px;
+            font-weight: bold;
+            &:hover{
+                background-color: var(--bg-yellow);
+                color: var(--bg-background);
+            }
         }
         .loginButton{
             img{

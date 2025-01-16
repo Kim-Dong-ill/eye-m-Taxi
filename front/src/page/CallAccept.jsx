@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Button from "../components/button";
-import Map from "../components/Map";
+import CallMap from "../components/CallMap";
 import sound from "/icon/sound.svg";
 import call from "/icon/call.svg";
 import OpenCVCamera from '../components/OpenCVCamera';
-
 import "../css/callAccept.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function CallAccept() {
 
@@ -19,12 +18,16 @@ function CallAccept() {
   };
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { pickup, dropoff} = location.state || {};
+  if (!pickup || !dropoff) {
+    return <div>경로 데이터를 불러오는 중입니다...</div>;
+  }
   const [remainingMinutes, setRemainingMinutes] = useState(5);  // 초기값 5분으로 설정
   // const [carNumber] = useState(generateRandomCarNumber());  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [carNumber] = useState("123가4568");  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [showCamera, setShowCamera] = useState(false);
 
-  
   // 카운트다운 효과 수정
   useEffect(() => {
     if (remainingMinutes <= 1) {
@@ -37,7 +40,7 @@ function CallAccept() {
         return prev - 2;
       });
     }, 5000);
-
+ 
     return () => clearInterval(timer);
   }, [remainingMinutes]);
 
@@ -78,6 +81,13 @@ function CallAccept() {
     },
   ];
 
+  const test = () => {
+    if(pickup && dropoff) {
+      console.log("+==============",pickup, dropoff)
+      navigate("/driveing", {state:{pickup, dropoff}})
+    }
+  }
+
   return (
     <div className="callAccept">
     {showCamera ? (
@@ -90,7 +100,12 @@ function CallAccept() {
       />
     ) : (
       <>
-        <Map height={height} />
+        <CallMap 
+          height={height} 
+          pickup={pickup} 
+          dropoff={dropoff} 
+          showTaxi={true} 
+        />
         <div className="buttons">
           {btnData.map((btn, index) => (
             <Button key={index} btnData={btn} />
@@ -103,6 +118,9 @@ function CallAccept() {
           <button className="icon-button" onClick={handleCall}>
             <img src={call} alt="phone" />
           </button>
+        </div>
+        <div onClick={test}>
+          testButton
         </div>
       </>
     )}

@@ -7,6 +7,7 @@ function Map({height, handleCurrentPosition}) {
   // const [mapHeight, setMapHeight] = useState(height);
     const mapContainerRef = useRef(null);
     useMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, handleCurrentPosition);
+
     
   //   useEffect(() => {
   //     // 뷰포트 높이 변화 감지

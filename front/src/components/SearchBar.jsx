@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/components/searchBar.scss';
 import mic from "../../public/icon/Microphone.svg";
 
-function SearchBar({ onSearch, text,locationType,locationState }) {  
+function SearchBar({ onSearch, text = '', locationType, locationState }) {  
   const [searchAddress, setSearchAddress] = useState(text);  // text prop으로 초기값 설정
   const navigate = useNavigate();
   const location = useLocation();

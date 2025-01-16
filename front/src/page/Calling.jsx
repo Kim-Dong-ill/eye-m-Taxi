@@ -2,10 +2,22 @@ import React, { useEffect, useState } from "react";
 import TextBox from "../components/TextBox";
 import Button from "../components/button";
 import "../css/calling.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Calling() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { pickup, dropoff } = location.state || {};
+
+  // 좌표값이 제대로 전달되었는지 콘솔에 출력
+  useEffect(() => {
+    console.log("Calling 페이지에서 전달받은 좌표값:");
+    console.log("pickup:", pickup);
+    console.log("dropoff:", dropoff);
+  }, [pickup, dropoff]);
+
+
   const [distance, setDistance] = useState("1");
 
   useEffect(() => {
@@ -18,7 +30,11 @@ function Calling() {
     }, 7000);
 
     const timerNavigate = setTimeout(() => {
-      navigate(`/callAccept/`);
+      if (pickup && dropoff) {
+      navigate("/callAccept/", {
+        state: { pickup, dropoff },
+      });
+    }
     }, 10000);
 
     // cleanup function
