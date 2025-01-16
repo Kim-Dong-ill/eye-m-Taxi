@@ -1,27 +1,24 @@
-import React from 'react'
-import '../css/components/inputBox.scss'
+import React from "react";
+import "../css/components/inputBox.scss";
 
-
-function inputBox({data}) {
-  return (
-    data.map((item, index) => (
-        <div key={index} className='inputBox'>
-        <div className='inputBoxIcon'>
-            <img src={item.img} alt="" />
-        </div>
-      <input 
-      className='inputBoxInput' 
-      type={item.type}
-      name={item.name}
-      placeholder={item.placeholder}
-      maxLength={item.maxLength}
-      onInput={item.onInput}
-      onChange={item.onChange}  
-      value={item.value || ''} 
+function inputBox({ data }) {
+  return data.map((item, index) => (
+    <div key={index} className="inputBox">
+      <div className="inputBoxIcon">
+        <img src={item.img} alt="" />
+      </div>
+      <input
+        className="inputBoxInput"
+        type={item.type}
+        name={item.name}
+        placeholder={item.placeholder}
+        maxLength={item.maxLength}
+        onInput={item.onInput}
+        onChange={item.onChange}
+        value={item.value || ""}
       />
     </div>
-    ))
-  )
+  ));
 }
 
-export default inputBox
+export default inputBox;

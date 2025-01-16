@@ -6,6 +6,11 @@
     justify-content: center;
     align-items: center;
     .registerContainer{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 100px;
         .registerInputBox{
             display: flex;
             flex-direction: column;
@@ -15,31 +20,9 @@
     }
     .error-message {
         color: red;
-        font-size: 20px;
+        font-size: 24px;
         margin-top: 5px;
+        font-weight: bold;
         text-align: left;
-      }
-
-    .registerButton{
-        width: 300px;
-        height: 80px;
-        background-color: var(--bg-background);
-        border: 2.5px solid var(--bg-yellow);
-        color: var(--bg-yellow);
-        border-radius: 10px;
-        font-size: 38px;
-        cursor: pointer;
-        // padding: 12px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 100px auto 0;
-
-    //     &:hover {
-    //         background-color: var(--bg-yellow);
-    //         color: black;
-        
-    // }
-}
-    
+      }    
 }
