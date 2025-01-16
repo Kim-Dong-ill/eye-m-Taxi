@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/components/searchBar.scss';
-import mic from "../../public/icon/Microphone.svg";
+import SvgThema from './SvgThema';
+import { useTheme } from '../components/contain/ThemeContext'
 
 function SearchBar({ onSearch, text = '', locationType, locationState }) {  
   const [searchAddress, setSearchAddress] = useState(text);  // text prop으로 초기값 설정
   const navigate = useNavigate();
   const location = useLocation();
-  // const locationType = new URLSearchParams(location.search).get('type');
+  const { themeColor } = useTheme()
 
   const handleFocus = () => {
     setSearchAddress('');  // input 클릭(포커스) 시 값 초기화
@@ -39,7 +40,7 @@ function SearchBar({ onSearch, text = '', locationType, locationState }) {
           className="address-input"
         />
         <button type="button" className="mic-button" onClick={handleMicClick}>
-          <img src={mic} alt="microphone" />
+          <SvgThema icon="MIC_SVG" color={themeColor} />
         </button>
       </form>
     </div>

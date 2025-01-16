@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Button from "../components/button";
 import CallMap from "../components/CallMap";
-import sound from "/icon/sound.svg";
-import call from "/icon/call.svg";
 import OpenCVCamera from '../components/OpenCVCamera';
 import "../css/callAccept.scss";
 import { useNavigate, useLocation } from "react-router-dom";
+import SvgThema from '../components/SvgThema';
+import { useTheme } from '../components/contain/ThemeContext'
 
 function CallAccept() {
-
-  // 랜덤 차량번호 생성
-  const generateRandomCarNumber = () => {
-    const numbers = Math.floor(Math.random() * 9000 + 1000); // 1000-9999 사이의 랜덤 숫자
-    const chars = '가나다라마바사아자차카타파하';
-    const randomChar = chars[Math.floor(Math.random() * chars.length)];
-    return `${Math.floor(Math.random() * 99)}${randomChar} ${numbers}`;
-  };
-
+  const { themeColor } = useTheme()
   const navigate = useNavigate();
   const location = useLocation();
   const { pickup, dropoff} = location.state || {};
@@ -113,10 +105,10 @@ function CallAccept() {
         </div>
         <div className="icons">
           <button className="icon-button" onClick={handleSpeak}>
-            <img src={sound} alt="speaker" />
+            <SvgThema icon="SOUND_SVG" color={themeColor}/>
           </button>
           <button className="icon-button" onClick={handleCall}>
-            <img src={call} alt="phone" />
+            <SvgThema icon="CALL_SVG" color={themeColor}/>
           </button>
         </div>
         <div onClick={test}>
