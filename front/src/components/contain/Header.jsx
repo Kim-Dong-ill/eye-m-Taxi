@@ -1,37 +1,42 @@
-import React from 'react'
-import {useNavigate} from 'react-router-dom'
-import arrowLeft from '../../../public/icon/Arrow-Left.svg'
-import logo from '../../../public/icon/logo.svg'
-import '../../css/header.scss'
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import logo from "../../../public/icon/logo.svg";
+import "../../css/header.scss";
+import { useTheme } from './ThemeContext'
+import SvgThema from '../../components/SvgThema'
 
-function Header({showBackArrow,showMainPage}) {
-    const navigate = useNavigate()
 
-    const handleBack = () => {
-        navigate(-1);
-      }
+function Header({ showBackArrow, showMainPage }) {
+  const navigate = useNavigate();
+  const { themeColor } = useTheme()
 
-      
-    const moveToMain = () => {
-        if(showMainPage == false){
-            navigate('/');
-        }
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const moveToMain = () => {
+    if (showMainPage == false) {
+      navigate("/");
     }
-      
-      
+  };
 
+  
 
   return (
-    <div className='header'>
-      <div className='headerContainer'>
-        <div className='headerLeft'>
-        {showBackArrow && <img src={arrowLeft} alt="back" onClick={handleBack} />}
+    <div className="header">
+      <div className="headerContainer">
+        <div className="headerLeft">
+        {showBackArrow && <SvgThema icon="ARROW_SVG" color={themeColor} onClick={handleBack} />}
         </div>
-        <div className='headerCenter'><img src={logo} onClick={moveToMain} /></div>
-        <div className='headerRight'><img src={arrowLeft} alt="" /></div>
+        <div className="headerCenter">
+          <SvgThema icon="LOGO_SVG" color={themeColor} onClick={moveToMain} />
+        </div>
+        <div className="headerRight">
+        <SvgThema color={themeColor} />
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Header
+export default Header;

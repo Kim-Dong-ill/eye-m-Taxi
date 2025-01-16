@@ -1,11 +1,15 @@
 import React from "react";
 import "../css/components/inputBox.scss";
+import SvgThema from "./SvgThema";
+import { useTheme } from './contain/ThemeContext'
 
 function inputBox({ data }) {
+  const { themeColor } = useTheme()
+  
   return data.map((item, index) => (
     <div key={index} className="inputBox">
       <div className="inputBoxIcon">
-        <img src={item.img} alt="" />
+        <SvgThema icon={item.icon} color={themeColor} />
       </div>
       <input
         className="inputBoxInput"
