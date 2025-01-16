@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../../../public/icon/logo.svg";
 import "../../css/header.scss";
 import { useTheme } from './ThemeContext'
 import SvgThema from '../../components/SvgThema'
+import logo from "../../../public/icon/logo.svg";
 
 
 function Header({ showBackArrow, showMainPage }) {
@@ -29,7 +29,7 @@ function Header({ showBackArrow, showMainPage }) {
         {showBackArrow && <SvgThema icon="ARROW_SVG" color={themeColor} onClick={handleBack} />}
         </div>
         <div className="headerCenter">
-          <SvgThema icon="LOGO_SVG" color={themeColor} onClick={moveToMain} />
+          <img src={logo} color={themeColor} onClick={moveToMain} />
         </div>
         <div className="headerRight">
         <SvgThema color={themeColor} />

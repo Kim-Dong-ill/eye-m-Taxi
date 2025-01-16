@@ -236,7 +236,7 @@ function Register() {
 
   const data = [
     {
-      img: user,
+      icon: "PERSON_SVG",
       type: "text",
       placeholder: "아이디(메일 형식)",
       onChange: handleUserIdChange,
@@ -244,7 +244,7 @@ function Register() {
       value: userId,
     },
     {
-      img: lock,
+      icon: "LOCK_SVG",
       type: "password",
       placeholder: "비밀번호(a,1,! 8자 이내)",
       maxLength: 8,
@@ -252,7 +252,7 @@ function Register() {
       value: password,
     },
     {
-      img: lock,
+      icon: "LOCK_SVG",
       type: "password",
       placeholder: "비밀번호 확인",
       maxLength: 8,
@@ -260,7 +260,7 @@ function Register() {
       value: confirmPassword,
     },
     {
-      img: phone,
+      icon: "PHONE_SVG",
       type: "text",
       placeholder: "전화번호(숫자만 입력)",
       maxLength: 11,

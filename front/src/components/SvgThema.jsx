@@ -7,7 +7,8 @@ import {
   CALL_SVG, 
   LOCK_SVG, 
   SOUND_SVG,
-  PERSON_SVG
+  PERSON_SVG,
+  PHONE_SVG
 } from "./AllSvg";
 
 const Icons = {
@@ -18,7 +19,8 @@ const Icons = {
   CALL_SVG,
   LOCK_SVG,
   SOUND_SVG,
-  PERSON_SVG
+  PERSON_SVG,
+  PHONE_SVG
 };
 
 const iconSizes = {
@@ -29,7 +31,8 @@ const iconSizes = {
   CALL_SVG: { width: "120px", height: "120px" },
   LOCK_SVG: { width: "36px", height: "36px" },
   SOUND_SVG: { width: "120px", height: "120px" },
-  PERSON_SVG: { width: "36px", height: "36px" }
+  PERSON_SVG: { width: "36px", height: "36px" },
+  PHONE_SVG: { width: "36px", height: "36px" }
 };
 
 const SvgThema = ({ icon, color, onClick, size }) => {
@@ -50,6 +53,9 @@ const SvgThema = ({ icon, color, onClick, size }) => {
         WebkitMask: `url("${Icons[icon]}") center/contain no-repeat`,
         mask: `url("${Icons[icon]}") center/contain no-repeat`,
         cursor: onClick ? "pointer" : "default",
+        display: 'inline-block',  // 추가
+        maskSize: 'contain',      // 추가
+        WebkitMaskSize: 'contain' // 추가
       }}
     />
   );
