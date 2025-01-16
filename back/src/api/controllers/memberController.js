@@ -52,6 +52,7 @@ const authUser = async (req, res) => {
 
 // 카카오 로그인
 const loginWithKakao = async (req, res) => {
+  console.log("카카오 로그인 요청 받음");
   const { code } = req.query; // 클라이언트로부터 인증 코드 수신
 
   console.log(code)
