@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/contain/Header";
 import InputBox from "../components/InputBox";
 import "../css/login.scss";
-import user from "../../public/icon/Person.svg";
-import lock from "../../public/icon/Lock.svg";
 import Button from "../components/button";
 import kakaoLogin from "../../public/icon/kakaoLogin.svg";
 import { useDispatch } from "react-redux";
@@ -25,7 +23,7 @@ function Login() {
     const code = new URLSearchParams(window.location.search).get("code");
     if (code) {
       // 카카오 로그인 후 서버에서 인증 처리
-      fetch(`/kakao/login?code=${code}`)
+      fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/kakao/login?code=${code}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.accessToken) {
