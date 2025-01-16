@@ -25,15 +25,19 @@ img{
 ul{
 	padding: 0px;
 }
+
+:root{
+   --bg-background: #0B0B0B;
+   --bg-yellow: #FECB00;
+   --theme-color: #FECB00;  /* 기본 테마 색상 추가 */
+}
+/* 사용 예시 */
+/* background-color: var(--bg-background); */
+
 html,body,#root{
     height: 100vh;
-    color: var(--bg-yellow);
+    color: var(--theme-color);
+    background-color: var(--bg-background);
 }
 
  
- :root{
-    --bg-background: #0B0B0B;
-    --bg-yellow: #FECB00;
- }
- /* 사용 예시 */
- /* background-color: var(--bg-background); */

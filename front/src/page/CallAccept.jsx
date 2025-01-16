@@ -20,22 +20,15 @@ function CallAccept() {
   const navigate = useNavigate();
   const location = useLocation();
   const { pickup, dropoff} = location.state || {};
-
-  // 좌표값이 제대로 전달되었는지 콘솔에 출력
-  useEffect(() => {
-    console.log("Calling 페이지에서 전달받은 좌표값:");
-    console.log("pickup:", pickup);
-    console.log("dropoff:", dropoff);
-  }, [pickup, dropoff]);
-  
   if (!pickup || !dropoff) {
     return <div>경로 데이터를 불러오는 중입니다...</div>;
   }
-
-  const [remainingMinutes, setRemainingMinutes] = useState(10);  // 초기값 5분으로 설정
-  const [carNumber] = useState(generateRandomCarNumber());  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
+  const [remainingMinutes, setRemainingMinutes] = useState(5);  // 초기값 5분으로 설정
+  // const [carNumber] = useState(generateRandomCarNumber());  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
+  const [carNumber] = useState("123가4568");  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [showCamera, setShowCamera] = useState(false);
 
+  
   // 카운트다운 효과 수정
   useEffect(() => {
     if (remainingMinutes <= 1) {
@@ -102,8 +95,6 @@ function CallAccept() {
       <OpenCVCamera 
         expectedPlateNumber={carNumber}
         onPlateDetected={(rect) => {
-          // 번호판 영역이 감지되면 처리
-          console.log('번호판 영역 감지:', rect);
           // 여기서 번호판 인식이 완료되면 driving 페이지로 이동
           navigate("/driveing");
         }}

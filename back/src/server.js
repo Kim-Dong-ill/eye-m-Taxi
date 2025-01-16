@@ -18,7 +18,9 @@ const port = process.env.PORT || 3000
 app.use(cors({
   origin: process.env.CORS_ORIGIN?.split(',') || [  // 여러 도메인 지원
     'https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com',
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'http://192.168.106.239:5173',    // USB 테더링 IP
+    'http://192.168.0.144:5173'       // 이더넷 IP
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -26,11 +28,12 @@ app.use(cors({
   optionsSuccessStatus: 200 // OPTIONS 요청에 대한 성공 상태 코드
 }));
 
+
 app.use(express.json())
 
 mountRouter(app)
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0',() => {
   console.log(`Server is running on port ${port}`)
   console.log(`Environment: ${process.env.NODE_ENV}`)
   console.log(`CORS Origin: ${process.env.CORS_ORIGIN}`)

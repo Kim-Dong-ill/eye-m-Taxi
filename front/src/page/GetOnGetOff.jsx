@@ -14,7 +14,7 @@ function GetOnGetOff() {
   const location = useLocation();
   const locationType = new URLSearchParams(location.search).get("locationType");
   console.log("currentPosition:", currentPosition?currentPosition:null);
-  const height = 450;
+  const height = 400;
   const btnData = {
     text: "이 위치로 설정",
     // link: "/",

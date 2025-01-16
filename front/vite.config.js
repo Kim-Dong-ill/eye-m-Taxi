@@ -12,6 +12,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,  // 기본 포트
-    host: 'localhost',  // 명시적으로 localhost 지정
+    host: 'true',  // 모든 IP 주소에서 접근 허용
+    strictPort: true,
+    hmr: {
+      host: '192.168.106.239',
+      port: 5173
+    }
   }
 })
