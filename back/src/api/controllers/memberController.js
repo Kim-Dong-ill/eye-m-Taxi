@@ -26,7 +26,7 @@ const memberLogin = async (req, res) => {
     const data = req.body;
     const result = await memberService.memberLogin(data);
     const token = jwt.sign({ userId: result.userId }, process.env.JWT_SECRET, {
-      expiresIn: "5h",
+      expiresIn: "1h",
     });
     res.send(
       {
