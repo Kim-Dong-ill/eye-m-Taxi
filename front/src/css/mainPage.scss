@@ -13,16 +13,28 @@
         gap: 20px;
         width: 100%;
         .mainPageItem{
-            border: 2.5px solid var(--bg-yellow);
+            border: 10px solid var(--bg-yellow);
             border-radius: 10px;
             width: 70%;
             height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 58px;
+            font-size: 68px;
             font-weight: bold;
             cursor: pointer;
+            &:hover{
+                background-color: var(--bg-yellow);
+                color: var(--bg-background);
+            }
         }
     }
+}
+
+.pickupLocation,
+.dropoffLocation{
+    padding: 5px;
+    border: 7px solid;
+    border-radius: 10px;
+    font-size: 38px;
 }

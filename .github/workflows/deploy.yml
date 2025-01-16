@@ -5,7 +5,46 @@ on:
     branches: [ main-backup ]
 
 jobs:
+  deploy-python-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr
+          sudo apt-get install -y tesseract-ocr-kor
+
+      - name: Install dependencies
+        run: |
+          cd back
+          pip install -r requirements.txt
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: '>= 363.0.0'
+
+      - name: Deploy Python Backend
+        run: |
+          cd back
+          gcloud app deploy python_app.yaml --project=${{ secrets.GCP_PROJECT_ID }}
+
   deploy-backend:
+    needs: deploy-python-backend  # Python 백엔드 배포 후 Node.js 백엔드 배포
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -51,11 +90,13 @@ jobs:
           VITE_KAKAO_APP_KEY: ${{ secrets.VITE_KAKAO_APP_KEY }}
           VITE_NODE_SERVER_URL: ${{ secrets.VITE_NODE_SERVER_URL }}
           VITE_MAPBOX_ACCESS_TOKEN: ${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}
+          VITE_PYTHON_SERVER_URL: ${{ secrets.VITE_PYTHON_SERVER_URL }}
         run: |
           cd front
           echo "VITE_NODE_SERVER_URL=${{ secrets.VITE_NODE_SERVER_URL }}" > .env.production
-          echo "VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" >> .env.production  # 추가
-          echo "VITE_KAKAO_APP_KEY=${{ secrets.VITE_KAKAO_APP_KEY }}" >> .env.production  # 추가
+          echo "VITE_MAPBOX_ACCESS_TOKEN=${{ secrets.VITE_MAPBOX_ACCESS_TOKEN }}" >> .env.production
+          echo "VITE_KAKAO_APP_KEY=${{ secrets.VITE_KAKAO_APP_KEY }}" >> .env.production
+          echo "VITE_PYTHON_SERVER_URL=${{ secrets.VITE_PYTHON_SERVER_URL }}" >> .env.production
           npm install
           npm run build
 

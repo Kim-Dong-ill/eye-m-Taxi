@@ -2,15 +2,15 @@
 import React, { useEffect, useState } from "react";
 import "../css/mainPage.scss";
 import { useLocation, useNavigate } from "react-router-dom";
+import ColorPalette from "../components/ColorPalette";
 
 function MainPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [pickupLocation, setPickupLocation] = useState(''); // 승차 위치
-  const [dropoffLocation, setDropoffLocation] = useState(''); // 하차 위치
-console.log(pickupLocation);
-console.log(dropoffLocation);
-
+  const [pickupLocation, setPickupLocation] = useState(""); // 승차 위치
+  const [dropoffLocation, setDropoffLocation] = useState(""); // 하차 위치
+  console.log(pickupLocation);
+  console.log(dropoffLocation);
 
   // location.state로 전달된 주소 처리
   useEffect(() => {
@@ -30,39 +30,49 @@ console.log(dropoffLocation);
   const handleLocationClick = (type) => {
     const currentLocations = {
       pickup: pickupLocation,
-      dropoff: dropoffLocation
+      dropoff: dropoffLocation,
     };
     navigate(`/getOnGetOff?locationType=${type}`, {
-      state: currentLocations
+      state: currentLocations,
     });
     console.log(currentLocations);
-    
   };
 
   // 두 위치가 모두 있을 때 다음 페이지로 이동
   useEffect(() => {
     if (pickupLocation && dropoffLocation) {
-      navigate('/callPreview', {
+      navigate("/callPreview", {
         state: {
           pickup: pickupLocation,
-          dropoff: dropoffLocation
-        }
+          dropoff: dropoffLocation,
+        },
       });
     }
-  }, [pickupLocation, dropoffLocation,navigate]);
+  }, [pickupLocation, dropoffLocation, navigate]);
 
   return (
     <div className="mainPage">
+      <ColorPalette />
       <div className="mainPageItemContainer">
-      <div className="mainPageItem" onClick={() => handleLocationClick('pickup')}>
-      승차
+        <div
+          className="mainPageItem"
+          onClick={() => handleLocationClick("pickup")}
+        >
+          승차
         </div>
-        <div className="mainPageItem" onClick={() => handleLocationClick('dropoff')}>
+        <div
+          className="mainPageItem"
+          onClick={() => handleLocationClick("dropoff")}
+        >
           하차
         </div>
         <div>
-        {pickupLocation?.address && <div>승차 : {pickupLocation.address}</div>}
-        {dropoffLocation?.address && <div>하차 : {dropoffLocation.address}</div>}
+          {pickupLocation?.address && (
+            <div className="pickupLocation"> 승차 : {pickupLocation.address}</div>
+          )}
+          {dropoffLocation?.address && (
+            <div className="dropoffLocation">하차 : {dropoffLocation.address}</div>
+          )}
         </div>
       </div>
     </div>
