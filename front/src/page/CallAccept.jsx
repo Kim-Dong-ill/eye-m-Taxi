@@ -100,10 +100,10 @@ function CallAccept() {
           ))}
         </div>
         <div className="icons">
-          <button className="icon-button" onClick={handleSpeak}>
+          <button className="icon-button" onClick={handleSpeak} aria-label="남은 시간 듣기">
             <SvgThema icon="SOUND_SVG" color={themeColor} />
           </button>
-          <button className="icon-button" onClick={handleCall}>
+          <button className="icon-button" onClick={handleCall} aria-label="기사님께 전화 걸기">
             <SvgThema icon="CALL_SVG" color={themeColor}/>
           </button>
         </div>

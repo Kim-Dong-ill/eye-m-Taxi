@@ -25,11 +25,11 @@ function Header({ showBackArrow, showMainPage }) {
   return (
     <div className="header">
       <div className="headerContainer">
-        <div className="headerLeft">
+        <div className="headerLeft" aria-label="뒤로가기">
         {showBackArrow && <SvgThema icon="ARROW_SVG" color={themeColor} onClick={handleBack} />}
         </div>
         <div className="headerCenter">
-          <img src={logo} color={themeColor} onClick={moveToMain} />
+          <img src={logo} color={themeColor} onClick={moveToMain} aria-label="로고"/>
         </div>
         <div className="headerRight">
         <SvgThema color={themeColor} />

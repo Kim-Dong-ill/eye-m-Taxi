@@ -39,7 +39,7 @@ function SearchBar({ onSearch, text = '', locationType, locationState }) {
           placeholder="주소를 입력하세요"
           className="address-input"
         />
-        <button type="button" className="mic-button" onClick={handleMicClick}>
+        <button type="button" className="mic-button" onClick={handleMicClick} aria-label='주소 음성 검색'>
           <SvgThema icon="MIC_SVG" color={themeColor} />
         </button>
       </form>
