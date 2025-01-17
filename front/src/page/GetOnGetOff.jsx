@@ -13,7 +13,6 @@ function GetOnGetOff() {
   const navigate = useNavigate();
   const location = useLocation();
   const locationType = new URLSearchParams(location.search).get("locationType");
-  console.log("currentPosition:", currentPosition?currentPosition:null);
   const height = 400;
   const btnData = {
     text: "이 위치로 설정",
@@ -82,7 +81,6 @@ function GetOnGetOff() {
         navigate("/", {
           state: newState,
         });
-        // console.log("전달되는 state:", newState); // state 확인용 로그
       }
     } catch (error) {
       console.error("주소 변환 중 오류 발생:", error);

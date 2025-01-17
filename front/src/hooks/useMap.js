@@ -83,16 +83,7 @@ const useMap = (mapContainerRef, style, config, handleCurrentPosition) => {
     }
   }, []);
 
-    // 현재 위치가 변경될 때마다 마커 업데이트
-    // useEffect(() => {
-    //     if (!mapRef.current || !currentPosition) return;
 
-    //     mapRef.current.flyTo({
-    //         center: [currentPosition.lng, currentPosition.lat],
-    //         zoom: 15
-    //     });
-
-    // }, [currentPosition]);
 
 }
 

@@ -27,7 +27,6 @@ useEffect(() => {
           if (data.accessToken) {
             // JWT 토큰을 로컬 스토리지에 저장
             localStorage.setItem("accessToken", data.accessToken);
-            console.log("Saved Token:", localStorage.getItem("accessToken"));  // 저장된 토큰을 확인
             // 메인 페이지로 리다이렉트
             navigate("/");
           } else {
@@ -54,7 +53,6 @@ useEffect(() => {
       return;
     }
 
-    console.log("로그인 시도:", loginData); // 전송되는 데이터 확인
 
     dispatch(
       loginUser({

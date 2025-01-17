@@ -20,7 +20,6 @@ function VoiceRecordList() {
 
     ps.keywordSearch(keyword, (data, status) => {
       if (status === kakao.maps.services.Status.OK) {
-        console.log("검색 결과:", data);
         const places = data.map((item) => ({
           text: item.place_name,
           coordinates: {
