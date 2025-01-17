@@ -15,27 +15,29 @@ function CallAccept() {
   if (!pickup || !dropoff) {
     return <div>경로 데이터를 불러오는 중입니다...</div>;
   }
-  const [remainingMinutes, setRemainingMinutes] = useState(5);  // 초기값 5분으로 설정
+  const [remainingMinutes, setRemainingMinutes] = useState(7);  // 초기값 5분으로 설정
   // const [carNumber] = useState(generateRandomCarNumber());  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [carNumber] = useState("123가4568");  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [showCamera, setShowCamera] = useState(false);
 
-  // 카운트다운 효과 수정
+  const handleStartCamera=()=>{
+    setShowCamera(true);
+  }
+  
   useEffect(() => {
-    if (remainingMinutes <= 1) {
-      setShowCamera(true); // 카메라 표시
-    }
-
     const timer = setInterval(() => {
       setRemainingMinutes((prev) => {
-        if (prev <= 3) clearInterval(timer);
-        return prev - 2;
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 1;
+        }
+        return prev - 1;
       });
-    }, 5000);
- 
-    return () => clearInterval(timer);
-  }, [remainingMinutes]);
+    }, 2000);
 
+    // 컴포넌트가 언마운트될 때 타이머 정리
+    return () => clearInterval(timer);
+  }, []);
 
   // 음성 합성 함수
   const handleSpeak = () => {
@@ -87,7 +89,7 @@ function CallAccept() {
         expectedPlateNumber={carNumber}
         onPlateDetected={(rect) => {
           // 여기서 번호판 인식이 완료되면 driving 페이지로 이동
-          navigate("/driveing");
+          navigate("/driveing", {state:{pickup, dropoff}});
         }}
       />
     ) : (
@@ -96,7 +98,8 @@ function CallAccept() {
           height={height} 
           pickup={pickup} 
           dropoff={dropoff} 
-          showTaxi={true} 
+          showTaxi={true}
+          handleStartCamera={handleStartCamera}
         />
         <div className="buttons">
           {btnData.map((btn, index) => (

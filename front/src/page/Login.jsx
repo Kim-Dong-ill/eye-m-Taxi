@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/contain/Header";
 import InputBox from "../components/InputBox";
 import "../css/login.scss";
-import user from "../../public/icon/Person.svg";
-import lock from "../../public/icon/Lock.svg";
 import Button from "../components/button";
 import kakaoLogin from "../../public/icon/kakaoLogin.svg";
 import { useDispatch } from "react-redux";
@@ -18,14 +16,27 @@ function Login() {
     email: "",
     password: "",
   });
+  const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${process.env.VITE_KAKAO_REDIRECT_URI}`;
 
-  const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}`;
-
+  useEffect(() => {
+    // 환경변수 디버깅
+    console.log('환경변수 확인:', {
+      NODE_SERVER_URL: process.env.VITE_NODE_SERVER_URL,
+      KAKAO_CLIENT_ID: process.env.VITE_KAKAO_CLIENT_ID,
+      KAKAO_REDIRECT_URI: process.env.VITE_KAKAO_REDIRECT_URI,
+      VITE_MAPBOX_ACCESS_TOKEN: process.env.VITE_MAPBOX_ACCESS_TOKEN,
+      VITE_KAKAO_NAVI_APP_KEY: process.env.VITE_KAKAO_NAVI_APP_KEY,
+      VITE_KAKAO_REDIRECT_URI: process.env.VITE_KAKAO_REDIRECT_URI,
+      MODE: import.meta.env.MODE,
+      DEV: import.meta.env.DEV,
+      PROD: import.meta.env.PROD
+    });
+  }, []);
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
     if (code) {
       // 카카오 로그인 후 서버에서 인증 처리
-      fetch(`/kakao/login?code=${code}`)
+      fetch(`${process.env.VITE_NODE_SERVER_URL}/kakao/login?code=${code}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.accessToken) {
