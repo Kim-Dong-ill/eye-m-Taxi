@@ -20,6 +20,7 @@ export default defineConfig({
     }
   },
   define: {
-    'import.meta.env.VITE_KAKAO_CLIENT_ID': JSON.stringify('ecd48aa7ae053e494783cf55d9a800c9')
+    'import.meta.env.VITE_KAKAO_CLIENT_ID': JSON.stringify('ecd48aa7ae053e494783cf55d9a800c9'),
+    'import.meta.env.VITE_KAKAO_REDIRECT_URI': JSON.stringify('https://eyemtaxi-back-dot-winged-woods-442503-f1.du.r.appspot.com/kakao/login'),
   }
 })
