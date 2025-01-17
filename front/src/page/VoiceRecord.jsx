@@ -55,7 +55,6 @@ function VoiceRecord() {
       const transcript = Array.from(event.results)
         .map((result) => result[0].transcript)
         .join("");
-      // console.log('인식된 텍스트:', transcript);
       setRecordedText(transcript); // 인식된 텍스트를 state에 저장
     };
 
@@ -66,11 +65,9 @@ function VoiceRecord() {
     if (!speechKit) return;
 
     if (!isRecording) {
-      console.log("녹음 시작");
       speechKit.recognition.start();
       setIsRecording(true);
     } else {
-      console.log("녹음 중지");
       speechKit.recognition.stop();
       setIsRecording(false);
       if (recordedText !== "") {
