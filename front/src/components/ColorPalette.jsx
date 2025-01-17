@@ -15,6 +15,7 @@ const ColorPalette = () => {
             value={themeColor}
             onChange={(e) => setThemeColor(e.target.value)}
             className="color-input"
+            aria-label='테마 색상 선택'
           />
         </div>
       </div>
@@ -27,6 +28,7 @@ const ColorPalette = () => {
             value={backgroundColor}
             onChange={(e) => setBackgroundColor(e.target.value)}
             className="color-input"
+            aria-label='배경 색상 선택'
           />
         </div>
       </div>

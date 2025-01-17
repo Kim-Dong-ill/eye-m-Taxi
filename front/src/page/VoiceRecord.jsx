@@ -88,6 +88,8 @@ function VoiceRecord() {
       <img
         src={Mice}
         onClick={handleVoiceRecord}
+        aria-label="주소를 말한 후 한번 더 눌러주세요"
+        alt="주소를 말한 후 한번 더 눌러주세요"
         className={isRecording === true ? "recording" : ""}
       />
       {isRecording && <div className="recordingText" style={{fontSize: "64px",fontWeight:"bold"}}>듣는 중...</div>}
