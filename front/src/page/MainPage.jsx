@@ -9,8 +9,6 @@ function MainPage() {
   const location = useLocation();
   const [pickupLocation, setPickupLocation] = useState(""); // 승차 위치
   const [dropoffLocation, setDropoffLocation] = useState(""); // 하차 위치
-  console.log(pickupLocation);
-  console.log(dropoffLocation);
 
   // location.state로 전달된 주소 처리
   useEffect(() => {

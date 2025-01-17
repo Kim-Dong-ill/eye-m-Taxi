@@ -10,14 +10,6 @@ function Calling() {
 
   const { pickup, dropoff } = location.state || {};
 
-  // 좌표값이 제대로 전달되었는지 콘솔에 출력
-  useEffect(() => {
-    console.log("Calling 페이지에서 전달받은 좌표값:");
-    console.log("pickup:", pickup);
-    console.log("dropoff:", dropoff);
-  }, [pickup, dropoff]);
-
-
   const [distance, setDistance] = useState("1");
 
   useEffect(() => {
