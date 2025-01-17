@@ -84,7 +84,7 @@ function VoiceRecord() {
   };
 
   return (
-    <div className="voiceRecord">
+    <div className="voiceRecord" aria-label="주소를 말한 후 한번 더 눌러주세요">
       <img
         src={Mice}
         onClick={handleVoiceRecord}
