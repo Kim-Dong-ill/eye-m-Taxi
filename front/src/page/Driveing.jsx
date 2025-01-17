@@ -9,9 +9,6 @@ function Driveing() {
   const location = useLocation();
   const { pickup, dropoff } = location.state || {};
 
-  console.log('pickup:', pickup);  // pickup 좌표 로그 확인
-  console.log('dropoff:', dropoff);  // dropoff 좌표 로그 확인
-
   useEffect(() => {
     const timer = setTimeout(() => {
       // navigate('/driveFinish');

@@ -147,51 +147,33 @@ function Register() {
 
   // 모든 유효성 검사가 통과되었는지 확인하는 함수
   const isFormValid = () => {
-    // 각 필드의 현재 상태 로깅
-    console.log("Form State:", {
-      userId,
-      password,
-      confirmPassword,
-      phoneNumber,
-      userIdError,
-      passwordError,
-      formError,
-    });
 
     // 1. 필수 필드 검사
     if (!userId || !password || !confirmPassword || !phoneNumber) {
-      console.log("필수 필드 누락");
-      // setFormError("모든 항목을 입력해주세요.");
       return false;
     }
 
     // 2. 이메일 형식 검사
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!emailRegex.test(userId)) {
-      console.log("이메일 형식 오류");
-      // setFormError("올바른 이메일 형식이 아닙니다.");
       return false;
     }
 
     // 3. 비밀번호 유효성 검사
     if (!validatePassword(password)) {
-      console.log("비밀번호 형식 오류");
       return false;
     }
 
     // 4. 비밀번호 일치 검사
     if (password !== confirmPassword) {
-      console.log("비밀번호 불일치");
       return false;
     }
 
     // 5. 전화번호 길이 검사
     if (phoneNumber.length !== 11) {
-      console.log("전화번호 길이 오류");
       return false;
     }
 
-    console.log("모든 유효성 검사 통과!");
     setFormError("");
     return true;
   };
@@ -200,9 +182,6 @@ function Register() {
     const isValid = isFormValid();
 
     if (isValid) {
-      console.log("userId:", userId); // 로그 추가
-      console.log("password:", password); // 로그 추가
-      console.log("phoneNumber:", phoneNumber); // 로그 추가
 
       try {
         const response = await axios.post(
@@ -214,7 +193,6 @@ function Register() {
           }
         );
 
-        console.log("Response:", response); // 응답 로그
         alert("회원가입에 성공했습니다.")
         if (response.data.success) {
           // 회원가입 성공 시 로그인 페이지로 이동
