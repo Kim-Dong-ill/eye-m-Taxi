@@ -68,6 +68,9 @@ const loginWithKakao = async (req, res) => {
         redirect_uri: process.env.KAKAO_REDIRECT_URI,
         code, // 인가 코드
       },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+      }
     });
 
     access_token = tokenResponse.data.access_token; // 블록 외부 변수에 값 할당
@@ -82,6 +85,7 @@ const loginWithKakao = async (req, res) => {
     const userResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
         Authorization: `Bearer ${access_token}`,
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
       },
     });
 
