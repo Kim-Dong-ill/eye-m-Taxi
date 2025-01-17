@@ -246,7 +246,7 @@ if (showTaxi) {
       }
     };
 
-    const moveInterval = setInterval(moveTaxi, 300); // 100ms마다 한 칸씩 이동
+    const moveInterval = setInterval(moveTaxi, 1000); 
   };
 
   return mapRef.current;

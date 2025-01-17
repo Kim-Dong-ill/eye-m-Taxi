@@ -7,7 +7,7 @@ const memberRegister = async (data) => {
     try {
         const password = await bcrypt.hash(data.password, 10)
         data.password = password
-        const result = await memberDao.memberRegister(data)
+        const result = await memberDao.memberRegister(data) 
         return result
     } catch (error) {
         console.log(error);
