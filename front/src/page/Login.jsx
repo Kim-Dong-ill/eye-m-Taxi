@@ -24,6 +24,9 @@ function Login() {
       NODE_SERVER_URL: import.meta.env.VITE_NODE_SERVER_URL,
       KAKAO_CLIENT_ID: import.meta.env.VITE_KAKAO_CLIENT_ID,
       KAKAO_REDIRECT_URI: import.meta.env.VITE_KAKAO_REDIRECT_URI,
+      VITE_MAPBOX_ACCESS_TOKEN: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
+      VITE_KAKAO_NAVI_APP_KEY: import.meta.env.VITE_KAKAO_NAVI_APP_KEY,
+      VITE_KAKAO_REDIRECT_URI: import.meta.env.VITE_KAKAO_REDIRECT_URI,
       MODE: import.meta.env.MODE,
       DEV: import.meta.env.DEV,
       PROD: import.meta.env.PROD
