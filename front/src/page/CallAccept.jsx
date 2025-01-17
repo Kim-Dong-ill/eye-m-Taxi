@@ -108,7 +108,7 @@ function CallAccept() {
         </div>
         <div className="icons">
           <button className="icon-button" onClick={handleSpeak}>
-            <SvgThema icon="SOUND_SVG" color={themeColor}/>
+            <SvgThema icon="SOUND_SVG" color={themeColor} />
           </button>
           <button className="icon-button" onClick={handleCall}>
             <SvgThema icon="CALL_SVG" color={themeColor}/>

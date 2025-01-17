@@ -10,14 +10,21 @@ instance_class: F1
 env_variables:
   PORT: 8080
   NODE_ENV: production
+  VITE_KAKAO_CLIENT_ID: "ecd48aa7ae053e494783cf55d9a800c9"
+  VITE_KAKAO_REDIRECT_URI: "https://eyemtaxi-back-dot-winged-woods-442503-f1.du.r.appspot.com/kakao/login"
+  VITE_NODE_SERVER_URL: "https://eyemtaxi-back-dot-winged-woods-442503-f1.du.r.appspot.com"
+  VITE_KAKAO_APP_KEY: "7b2abe9be42ad1bc0c2df885dee2ee92"
+  VITE_KAKAO_NAVI_APP_KEY: "5ddfd2d2e233ac84f170c92007d3974d"
+  VITE_MAPBOX_ACCESS_TOKEN: "pk.eyJ1Ijoid25zZ3VkNzY2IiwiYSI6ImNsbzJnd2N3bjFrNG8yaXBldGU3dnhhZ2MifQ.PXzAQDQqxlz4EJxgZUli1Q"
 
 handlers:
-  - url: /
+  # 정적 assets 처리
+  - url: /assets
+    static_dir: dist/assets
+    secure: always
+
+  # 모든 경로를 index.html로 리다이렉트
+  - url: /.*
     static_files: dist/index.html
     upload: dist/index.html
-    secure: always
-    
-  - url: /(.*)
-    static_files: dist/\1
-    upload: dist/(.*)
     secure: always

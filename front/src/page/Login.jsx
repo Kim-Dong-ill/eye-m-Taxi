@@ -24,9 +24,12 @@ function Login() {
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
+
     if (code) {
       // 카카오 로그인 후 서버에서 인증 처리
-      fetch(`/kakao/login?code=${code}`)
+
+      fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/kakao/login?code=${code}`)
+
         .then((response) => response.json())
         .then((data) => {
           if (data.accessToken) {
