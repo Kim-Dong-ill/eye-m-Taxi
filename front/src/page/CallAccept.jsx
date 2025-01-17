@@ -15,7 +15,7 @@ function CallAccept() {
   if (!pickup || !dropoff) {
     return <div>경로 데이터를 불러오는 중입니다...</div>;
   }
-  // const [remainingMinutes, setRemainingMinutes] = useState(5);  // 초기값 5분으로 설정
+  const [remainingMinutes, setRemainingMinutes] = useState(5);  // 초기값 5분으로 설정
   // const [carNumber] = useState(generateRandomCarNumber());  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [carNumber] = useState("123가4568");  // 차량번호를 컴포넌트 마운트 시 한 번만 생성
   const [showCamera, setShowCamera] = useState(false);
