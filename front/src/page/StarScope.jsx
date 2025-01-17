@@ -17,12 +17,12 @@ function StarScope() {
 
   return (
     <div className="starScope">
-      <div className="smallStar">
+      <div className="smallStar" aria-label={`별 ${starCount}개`}>
         {[...Array(starCount)].map((_, index) => (
           <SvgThema key={index} icon="BIG_STAR_SVG" color={themeColor} size="100px"/>
         ))}
       </div>
-      <div className="bigStar"onClick={handleStarClick}>
+      <div className="bigStar"onClick={handleStarClick} aria-label="별 추가하기">
         <SvgThema icon="BIG_STAR_SVG" color={themeColor}/>
       </div>
       <Button btnData={btnData} />
