@@ -15,8 +15,9 @@ function Map({height, handleCurrentPosition}) {
             <div ref={mapContainerRef} className='mapContainer' style={{width: '100%', height: '100%'}}/>
             <img 
                 src={marker2}
-                alt="마커투"
+                alt="현 위치 마커"
                 className="center-marker"
+                aria-label="현 위치 마커"
             />
         </div>
         )

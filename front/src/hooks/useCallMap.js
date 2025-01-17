@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import axios from 'axios';
-// import 'mapbox-gl/dist/mapbox-gl.css';
+import taxiIcon from "../../public/icon/taxi2.svg"
+
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, showTaxi,handleStartCamera) => {
@@ -11,7 +12,7 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, show
   const [taxiRoute, setTaxiRoute] = useState(null);
   const [taxiMarker, setTaxiMarker] = useState(null); // 택시 마커 상태
 
-  const taxiIconUrl = '/icon/taxi2.svg'; 
+  const taxiIconUrl = taxiIcon; 
   // 중간 지점 계산 함수
   const calculateMidPoint = (pickup, dropoff) => {
     if (!pickup || !dropoff) return null;

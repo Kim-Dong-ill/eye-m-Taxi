@@ -11,7 +11,7 @@ function Driveing() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // navigate('/driveFinish');
+      navigate('/driveFinish');
     }, 10000); // 10초 후 이동
 
     // 컴포넌트가 언마운트될 때 타이머 정리
