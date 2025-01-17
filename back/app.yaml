@@ -19,6 +19,15 @@ env_variables:
   DB_SCHEMA: "eyemtaxi"
   JWT_SECRET: "eyemtaxi"
   CORS_ORIGIN: "https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com"
+  KAKAO_CLIENT_ID: "ecd48aa7ae053e494783cf55d9a800c9"
+  KAKAO_REDIRECT_URI: "https://eyemtaxi-back-dot-winged-woods-442503-f1.du.r.appspot.com/kakao/login"
+  KAKAO_API_KEY: "5ddfd2d2e233ac84f170c92007d3974d"
+  ALLOWED_ORIGINS: "https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com"
+  FLASK_ENV: "production"
+  FLASK_APP: "plate_detection_server.py"
+  TESSERACT_PATH: "/usr/local/bin/tesseract"
+  DB_HOST: "/cloudsql/winged-woods-442503-f1:asia-northeast3:codelab"
+  DB_PORT: "5432"
 
 beta_settings:
   cloud_sql_instances: winged-woods-442503-f1:asia-northeast3:codelab
