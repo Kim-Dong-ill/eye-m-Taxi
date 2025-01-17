@@ -19,8 +19,4 @@ export default defineConfig({
       port: 5173
     }
   },
-  define: {
-    'process.env.VITE_KAKAO_CLIENT_ID': JSON.stringify('ecd48aa7ae053e494783cf55d9a800c9'),
-    'process.env.VITE_KAKAO_REDIRECT_URI': JSON.stringify('https://eyemtaxi-front-dot-winged-woods-442503-f1.du.r.appspot.com/login'),
-  }
 })
