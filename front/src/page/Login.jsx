@@ -17,10 +17,10 @@ function Login() {
     password: "",
   });
   const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}`;
-useEffect(() => {
+
+  useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
 
-    useEffect(() => {
     if (code) {
       // 카카오 로그인 후 서버에서 인증 처리
       fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/kakao/login?code=${code}`)
