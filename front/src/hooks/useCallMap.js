@@ -45,7 +45,7 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, show
         },
         {
           headers: {
-            Authorization: `KakaoAK ${import.meta.env.VITE_KAKAO_CLIENT_ID}`, // API 키 전달
+            Authorization: `KakaoAK ${process.env.VITE_KAKAO_CLIENT_ID}`, // API 키 전달
           },
         }
       );
