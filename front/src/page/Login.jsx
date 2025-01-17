@@ -16,17 +16,24 @@ function Login() {
     email: "",
     password: "",
   });
-  const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${process.env.VITE_KAKAO_REDIRECT_URI}`;
+  const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}`;
 
-  console.log('KAKAO_CLIENT_ID:', import.meta.env.VITE_KAKAO_CLIENT_ID);
-  console.log('KAKAO_REDIRECT_URI:', import.meta.env.VITE_KAKAO_REDIRECT_URI);
-  console.log('Generated URL:', kakaoLoginUrl);
-console.log('임폴트All ENV Variables:', import.meta.env);        // 모든 환경 변수 확인
+  useEffect(() => {
+    // 환경변수 디버깅
+    console.log('환경변수 확인:', {
+      NODE_SERVER_URL: import.meta.env.VITE_NODE_SERVER_URL,
+      KAKAO_CLIENT_ID: import.meta.env.VITE_KAKAO_CLIENT_ID,
+      KAKAO_REDIRECT_URI: import.meta.env.VITE_KAKAO_REDIRECT_URI,
+      MODE: import.meta.env.MODE,
+      DEV: import.meta.env.DEV,
+      PROD: import.meta.env.PROD
+    });
+  }, []);
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
     if (code) {
       // 카카오 로그인 후 서버에서 인증 처리
-      fetch(`${import.meta.VITE_NODE_SERVER_URL}/kakao/login?code=${code}`)
+      fetch(`${import.meta.env.VITE_NODE_SERVER_URL}/kakao/login?code=${code}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.accessToken) {

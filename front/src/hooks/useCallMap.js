@@ -5,7 +5,7 @@ import axios from 'axios';
 // import 'mapbox-gl/dist/mapbox-gl.css';
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, showTaxi) => {
+const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, showTaxi,handleStartCamera) => {
   const mapRef = useRef(null);
   const [route, setRoute] = useState(null);
   const [taxiRoute, setTaxiRoute] = useState(null);
@@ -241,6 +241,11 @@ const useCallPreviewMap = (mapContainerRef, style, config, pickup, dropoff, show
         currentIndex++;
       } else {
         clearInterval(moveInterval); // 경로가 끝나면 애니메이션 멈춤
+        if(handleStartCamera){
+          setTimeout(()=>{
+            handleStartCamera();
+          },2000)
+        }
       }
     };
 

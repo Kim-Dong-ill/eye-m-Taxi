@@ -19,4 +19,7 @@ export default defineConfig({
       port: 5173
     }
   },
+  define: {
+    'import.meta.env.VITE_KAKAO_CLIENT_ID': JSON.stringify('ecd48aa7ae053e494783cf55d9a800c9')
+  }
 })

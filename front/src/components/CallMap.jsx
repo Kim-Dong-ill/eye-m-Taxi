@@ -3,10 +3,10 @@ import { mapConfig } from '../config/mapConfig';
 import useCallPreviewMap from '../hooks/useCallMap';
 import mapboxgl from 'mapbox-gl';
 
-function CallMap({ height, pickup, dropoff, showTaxi = false }) {
+function CallMap({ height, pickup, dropoff, showTaxi = false ,handleStartCamera}) {
     const mapContainerRef = useRef(null);
 
-    const mapRef = useCallPreviewMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, pickup, dropoff, showTaxi);
+    const mapRef = useCallPreviewMap(mapContainerRef, mapConfig.defaultStyle, mapConfig, pickup, dropoff, showTaxi,handleStartCamera);
 
     return (
       
