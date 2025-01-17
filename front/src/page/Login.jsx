@@ -18,21 +18,6 @@ function Login() {
   });
   const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}`;
 
-  useEffect(() => {
-    // 환경변수 디버깅
-    console.log('환경변수 확인:', {
-      NODE_SERVER_URL: import.meta.env.VITE_NODE_SERVER_URL,
-      KAKAO_CLIENT_ID: import.meta.env.VITE_KAKAO_CLIENT_ID, 
-      KAKAO_REDIRECT_URI: import.meta.env.VITE_KAKAO_REDIRECT_URI,
-      VITE_MAPBOX_ACCESS_TOKEN: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
-      VITE_KAKAO_NAVI_APP_KEY: import.meta.env.VITE_KAKAO_NAVI_APP_KEY,
-      VITE_KAKAO_REDIRECT_URI: import.meta.env.VITE_KAKAO_REDIRECT_URI,
-      MODE: import.meta.env.MODE,
-      DEV: import.meta.env.DEV,
-      PROD: import.meta.env.PROD
-    });
-  }, []);
-  useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code");
     if (code) {
       // 카카오 로그인 후 서버에서 인증 처리

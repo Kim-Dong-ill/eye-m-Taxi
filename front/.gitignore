@@ -1,5 +1,6 @@
 .env
 .env.*
+app.yaml
 localhost-key.pem
 localhost.pem
 
