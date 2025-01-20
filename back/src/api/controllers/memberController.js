@@ -26,7 +26,7 @@ const memberLogin = async (req, res) => {
     const data = req.body;
     const result = await memberService.memberLogin(data);
     const token = jwt.sign({ userId: result.userId }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "10m",
     });
     res.send(
       {
@@ -114,7 +114,7 @@ const loginWithKakao = async (req, res) => {
         // nickname: result.nickname,
       },
       process.env.JWT_SECRET, // .env 파일에 저장된 비밀키
-      { expiresIn: "1h" } // 토큰 만료 시간 (예: 1시간)
+      { expiresIn: "10m" } // 토큰 만료 시간 (예: 1시간)
     );
 
     // 로그인 성공 후 클라이언트로 응답 반환
